@@ -1,13 +1,45 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { readFileSync } from 'node:fs';
+import { readFileSync, existsSync, statSync } from 'node:fs';
 import { validateLead, validWebhookUrl, signature, makeServer } from '../scripts/standalone-server.mjs';
 
 test('export preserva a landing e o formulário comercial', () => {
   const html = readFileSync('standalone-dist/index.html', 'utf8');
   assert.match(html, /id="leadForm"/);
   assert.match(html, /https:\/\/elus\.wandora\.com\.br\//);
-  assert.match(html, /office-team/);
+  assert.match(html, /class="cinema-team"/);
+  assert.doesNotMatch(html, /<div class="office-actors"/);
+  assert.match(html, /src="\/brand\/hero-office\.webp"/);
+  assert.match(html, /src="\/brand\/hero-team\.webp"/);
+  assert.match(html, /src="\/brand\/followup-scene\.webp"/);
+  assert.match(html, /src="\/brand\/followup-mascot\.webp"/);
+  assert.match(html, /src="\/brand\/followup-lead\.webp"/);
+  assert.match(html, /src="\/brand\/followup-actions\.webp"/);
+  assert.match(html, /id="leadForm"/);
+  assert.match(html, /id="cinemaFollowupCTA"/);
+  assert.match(html, /class="followup-stage cinema-followup" role="group"/);
+  assert.match(html, /class="cinema-mobile-flow"/);
+  assert.match(html, /class="cinema-mobile-step action"/);
+});
+
+
+test('os seis arquivos WebP existem no build e têm assinatura válida', () => {
+  const files = [
+    'hero-office.webp',
+    'hero-team.webp',
+    'followup-scene.webp',
+    'followup-mascot.webp',
+    'followup-lead.webp',
+    'followup-actions.webp',
+  ];
+  for (const file of files) {
+    const path = 'public/brand/' + file;
+    assert.ok(existsSync(path), 'Arte ausente: ' + path);
+    assert.ok(statSync(path).size > 10000, 'Arte inválida ou vazia: ' + path);
+    const bytes = readFileSync(path);
+    assert.equal(bytes.toString('ascii', 0, 4), 'RIFF', 'Cabeçalho WebP: ' + file);
+    assert.equal(bytes.toString('ascii', 8, 12), 'WEBP', 'Formato WebP: ' + file);
+  }
 });
 
 test('lead exige consentimento e campos adequados', () => {
