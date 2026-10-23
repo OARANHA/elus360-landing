@@ -1,0 +1,35 @@
+<template>
+<style>
+#root{position:absolute;inset:0;background:linear-gradient(125deg,#F9FBFF,#EBF3FF 52%,#F8F5FF);overflow:hidden;font-family:Arial,sans-serif}
+.panel{position:absolute;top:150px;width:286px;height:238px;border-radius:23px;background:#fff;border:2px solid #DCE8F8;box-shadow:0 22px 38px #183B6A22;padding:28px;box-sizing:border-box;color:#15365C}
+#lead{left:70px}#result{right:70px}
+.kicker{font-size:16px;font-weight:700;letter-spacing:.12em;color:#3868B8}
+.big{display:block;margin-top:40px;font-weight:800;font-size:25px}
+.small{font-size:17px;color:#526786;line-height:1.5;margin-top:12px}
+#hub{position:absolute;left:530px;top:128px;width:220px;height:220px;border-radius:50%;background:radial-gradient(circle at 38% 30%,white,#C9E0FF);display:flex;align-items:center;justify-content:center;flex-direction:column;border:2px solid #BBD7FA}
+#hub img{width:90px;height:112px;object-fit:contain}
+#hub b{font-size:24px;color:#24559C}
+#left-path,#right-path{position:absolute;top:255px;width:180px;height:75px;overflow:visible;fill:none;stroke:#5D97EE;stroke-width:5;stroke-linecap:round;stroke-dasharray:9 18}
+#left-path{left:358px}#right-path{right:354px}
+</style>
+<div data-hf-id="hf-follow-root" id="root" data-composition-id="followup" data-width="1280" data-height="540">
+<div id="scene" class="clip" data-start="0" data-duration="10" data-hf-id="hf-follow-clip">
+  <div id="lead" class="panel"><span class="kicker">NOVO INTERESSE</span><b class="big">Nova conversa</b><p class="small">Cliente pede informação</p></div>
+  <svg id="left-path" viewBox="0 0 180 75"><path d="M3 37C50 37 76 9 103 36S150 37 178 37"/></svg>
+  <div id="hub"><img src="assets/mascot-elus.png" alt="Mascote ELUS"><b>ELUS 360</b></div>
+  <svg id="right-path" viewBox="0 0 180 75"><path d="M3 37C42 37 73 67 105 37S148 37 178 37"/></svg>
+  <div id="result" class="panel"><span class="kicker">PRÓXIMA AÇÃO</span><b class="big">Retorno agendado</b><p class="small">Lembrete ativo com contexto</p></div>
+</div></div>
+<script>
+window.__timelines=window.__timelines||{};
+const tl=gsap.timeline({paused:true});
+tl.fromTo('#lead',{opacity:0,x:-42},{opacity:1,x:0,duration:1,ease:'power3.out'},.2);
+tl.fromTo('#left-path',{opacity:0,strokeDashoffset:100},{opacity:1,strokeDashoffset:0,duration:1.8,ease:'power2.out'},.7);
+tl.fromTo('#hub',{opacity:0,scale:.86,filter:'blur(8px)'},{opacity:1,scale:1,filter:'blur(0px)',duration:1.5,ease:'power2.out'},1.2);
+tl.fromTo('#right-path',{opacity:0,strokeDashoffset:100},{opacity:1,strokeDashoffset:0,duration:1.8,ease:'power2.out'},2.6);
+tl.fromTo('#result',{opacity:0,x:42},{opacity:1,x:0,duration:1.25,ease:'power3.out'},3.3);
+tl.to('#hub',{y:-9,duration:1.5,ease:'sine.inOut',yoyo:true,repeat:1},5);
+tl.to(['#lead','#left-path','#hub','#right-path','#result'],{opacity:0,duration:1.5,ease:'sine.inOut'},8.5);
+window.__timelines.followup=tl;
+</script>
+</template>

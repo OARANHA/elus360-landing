@@ -1,8 +1,9 @@
-# ELUS office: from concept to reality
-12-second silent 1600×900 / 30fps HyperFrames background.
-0–2s: architectural line drawing. 2–8s: left-to-right reveal of a photorealistic version of the same office. 8–10s: hold. 10–12s: soft return to the drawing for continuous looping.
-Both states were produced with ImageGen. The line image was edited directly from the real office asset to preserve viewpoint and architecture. The illustrated office is conceptual, not a claim about ELUS premises.
-Source: index.html → compositions/office.html. GSAP 3.14.2 vendored locally.
-Check: `hyperframes check --snapshots --json`
-Render: `hyperframes render --quality delivery --fps 30 --output ../public/brand/office-transition.mp4`
-The readable left-to-right navy gradient is applied by the website CSS, separately from this reusable video.
+# ELUS — escritório que se materializa
+
+Composição editável HyperFrames 1600×900, 16s: o desenho arquitetônico ganha linhas locais, textura, profundidade e nitidez até tornar-se um escritório realista ilustrativo. As três figuras humanas e dois mascotes ELUS aparecem em momentos escalonados. **Não há máscara de cortina horizontal.**
+
+Arquivos: `index.html`, `compositions/office.html`, `assets/team-figures.svg`, `assets/mascot-elus.png` e imagens reais/traço originais. Cores: azul meia-noite, azul, ciano, violeta.
+
+A landing usa versão de movimento implementada em HTML/CSS na própria `lib/landing.ts`, sem dependência de renderização MP4. O vídeo `public/brand/office-transition.mp4` permanece como histórico e já não é referenciado pela hero.
+
+Para renderizar e verificar no ambiente com dependências: `npm run check` e `npm run render`. **Esta alteração de fonte ainda não tem validação HyperFrames CLI ou render MP4 comprovados.**
