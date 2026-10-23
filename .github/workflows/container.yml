@@ -38,17 +38,17 @@ jobs:
       - uses: docker/login-action@v3
         with:
           registry: ghcr.io
-          username: \${{ github.actor }}
-          password: \${{ secrets.GITHUB_TOKEN }}
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
       - uses: docker/build-push-action@v6
         with:
           context: .
           push: true
           tags: |
             ghcr.io/oaranha/elus360-landing:main
-            ghcr.io/oaranha/elus360-landing:sha-\${{ github.sha }}
+            ghcr.io/oaranha/elus360-landing:sha-${{ github.sha }}
       - name: Solicitar redeploy no Portainer (se configurado)
         env:
-          PORTAINER_WEBHOOK_URL: \${{ secrets.ELUS360_PORTAINER_WEBHOOK_URL }}
+          PORTAINER_WEBHOOK_URL: ${{ secrets.ELUS360_PORTAINER_WEBHOOK_URL }}
         if: env.PORTAINER_WEBHOOK_URL != ''
         run: curl --fail --silent --show-error --retry 2 --max-time 20 --request POST "$PORTAINER_WEBHOOK_URL"
