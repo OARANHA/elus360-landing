@@ -6,7 +6,7 @@ import { validateLead, validWebhookUrl, signature, makeServer } from '../scripts
 test('export preserva a landing e o formulário comercial', () => {
   const html = readFileSync('standalone-dist/index.html', 'utf8');
   assert.match(html, /id="leadForm"/);
-  assert.match(html, /https:\/\/elus\.wandora\.com\.br\//);
+  assert.match(html, /https:\/\/elus\.wandora\.com\.br\/login/);
   assert.match(html, /class="cinema-team"/);
   assert.doesNotMatch(html, /<div class="office-actors"/);
   assert.match(html, /src="\/brand\/hero-office\.webp"/);
@@ -18,8 +18,8 @@ test('export preserva a landing e o formulário comercial', () => {
   assert.match(html, /id="leadForm"/);
   assert.match(html, /id="cinemaFollowupCTA"/);
   assert.match(html, /class="followup-stage cinema-followup" role="group"/);
-  assert.match(html, /class="cinema-mobile-flow"/);
-  assert.match(html, /class="cinema-mobile-step action"/);
+  assert.match(html, /id="followupMotionToggle"/);
+  assert.match(html, /class="followup-information followup-contact elus-emission"/);
 });
 
 
@@ -67,6 +67,12 @@ test('servidor sobe, responde healthz e não aceita formulário sem origem confi
     assert.equal((await fetch(base + '/healthz')).status, 200);
     assert.equal((await fetch(base + '/')).status, 200);
     assert.equal((await fetch(base + '/privacidade')).status, 200);
+    for (const file of ['followup-gsap.js','followup-motion.js','followup-player.js']) {
+      const asset = await fetch(base + '/brand/' + file);
+      assert.equal(asset.status, 200);
+      assert.match(asset.headers.get('content-type'), /javascript/);
+      assert.ok((await asset.text()).length > 100);
+    }
     const result = await fetch(base + '/api/leads', { method:'POST', headers: {'content-type':'application/json'}, body: JSON.stringify({ nome:'Ana Silva', empresa:'Testes',email:'ana@example.com',telefone:'(51) 99999-1111', consent:true }) });
     assert.equal(result.status, 503);
   } finally { await new Promise(resolve => server.close(resolve)); }

@@ -103,14 +103,14 @@ async function handleLeads(req, res) {
 
 function staticAsset(pathname, res, headOnly) {
   const file = pathname.slice('/brand/'.length);
-  if (!/^[A-Za-z0-9_-]+\.(png|jpe?g|webp|svg|mp4)$/.test(file)) {
+  if (!/^[A-Za-z0-9_-]+\.(png|jpe?g|webp|svg|mp4|js)$/.test(file)) {
     res.writeHead(404); return res.end();
   }
   const target = resolve(root, 'public/brand', file);
   try {
     const st = statSync(target);
     const ext = file.split('.').at(-1);
-    const type = { png: 'image/png', jpg: 'image/jpeg', jpeg: 'image/jpeg', webp: 'image/webp', svg: 'image/svg+xml', mp4: 'video/mp4' }[ext];
+    const type = { png: 'image/png', jpg: 'image/jpeg', jpeg: 'image/jpeg', webp: 'image/webp', svg: 'image/svg+xml', mp4: 'video/mp4', js: 'text/javascript; charset=utf-8' }[ext];
     res.writeHead(200, { 'content-type': type, 'content-length': st.size, 'cache-control': 'public, max-age=86400', 'x-content-type-options': 'nosniff' });
     if (headOnly) return res.end();
     return createReadStream(target).pipe(res);
