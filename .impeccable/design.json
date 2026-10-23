@@ -1,60 +1,158 @@
 {
   "schemaVersion": 2,
-  "generatedAt": "2026-10-22T21:54:00-03:00",
+  "generatedAt": "2026-10-23T05:16:07.861624+00:00",
   "title": "Design System: ELUS 360",
   "extensions": {
+    "colorMeta": {
+      "primary": {
+        "role": "primary",
+        "displayName": "Azul de ação"
+      },
+      "violet": {
+        "role": "secondary",
+        "displayName": "Violeta dos exemplos"
+      },
+      "hero-night": {
+        "role": "neutral",
+        "displayName": "Azul meia-noite do hero e navegação"
+      },
+      "hero-cyan": {
+        "role": "secondary",
+        "displayName": "Ciano do título"
+      },
+      "hero-action": {
+        "role": "primary",
+        "displayName": "Azul de ação do hero"
+      }
+    },
+    "typographyMeta": {
+      "display": {
+        "displayName": "Título do hero",
+        "purpose": "Título do hero de escritório; overrides em 1800px, 1100px, 800px e 480px."
+      }
+    },
     "shadows": [
       {
         "name": "small",
         "value": "0 2px 12px rgba(15,23,42,.06)",
-        "purpose": "Sutil"
+        "purpose": "Cartões claros."
       },
       {
         "name": "medium",
         "value": "0 8px 30px rgba(15,23,42,.10)",
-        "purpose": "Cartões"
+        "purpose": "Hover de cartões."
       },
       {
         "name": "large",
         "value": "0 24px 70px rgba(15,23,42,.16)",
-        "purpose": "Destaque"
+        "purpose": "Mockup."
       },
       {
         "name": "blue",
         "value": "0 12px 34px rgba(37,99,235,.28)",
-        "purpose": "Ação"
+        "purpose": "Hover do botão primário."
+      },
+      {
+        "name": "form",
+        "value": "0 20px 55px #153c7420",
+        "purpose": "Formulário comercial."
+      },
+      {
+        "name": "hero-form",
+        "value": "0 22px 60px #03102555",
+        "purpose": "Formulário branco sobre hero meia-noite."
       }
     ],
     "motion": [
       {
         "name": "button",
-        "value": "transform .18s ease, box-shadow .18s ease, background .18s ease",
-        "purpose": "Feedback"
+        "value": ".18s ease",
+        "purpose": "Hover de botões."
+      },
+      {
+        "name": "card",
+        "value": ".22s ease",
+        "purpose": "Elevação de cartões."
+      },
+      {
+        "name": "faq",
+        "value": ".32s ease",
+        "purpose": "Expansão de resposta."
+      },
+      {
+        "name": "reduced-motion",
+        "value": "none",
+        "purpose": "Animações e transições desligadas por prefers-reduced-motion: reduce."
+      },
+      {
+        "name": "hero-film",
+        "value": "12s silent loop, 1600x900",
+        "purpose": "Composição HyperFrames motion-office: desenho de escritório transforma-se em escritório realista; pausa manual, offscreen/hidden e poster para movimento reduzido."
       }
     ],
-    "narrative": {
-      "northStar": "Conversas Conectadas",
-      "overview": "Interface azul-gelo, ações azuis e acentos violetas, mascote 3D.",
-      "keyCharacteristics": [
-        "Superfícies claras",
-        "Fonte Plus Jakarta Sans",
-        "Profundidade suave"
-      ],
-      "rules": [
-        {
-          "name": "The Action-Blue Rule",
-          "body": "Azul para ação principal, violeta para apoio.",
-          "section": "colors"
-        }
-      ],
-      "dos": [
-        "Preservar marca oficial",
-        "Priorizar legibilidade"
-      ],
-      "donts": [
-        "Não inventar provas comerciais",
-        "Não substituir mascote"
-      ]
+    "breakpoints": [
+      {
+        "name": "product-stack",
+        "value": "1080px"
+      },
+      {
+        "name": "compact-navigation-spacing",
+        "value": "1050px"
+      },
+      {
+        "name": "hero-side-offset-min",
+        "value": "1000px",
+        "purpose": "Legacy hero offset overridden by final hero-side margin:0!important."
+      },
+      {
+        "name": "mobile-navigation",
+        "value": "960px"
+      },
+      {
+        "name": "hero-stack",
+        "value": "900px",
+        "purpose": "Earlier cascade; final office hero overrides stacking at 800px and compact heading at 480px."
+      },
+      {
+        "name": "mobile",
+        "value": "640px",
+        "purpose": "Earlier cascade; final office hero overrides stacking at 800px and compact heading at 480px."
+      },
+      {
+        "name": "official-hero-compact",
+        "value": "1100px",
+        "purpose": "Earlier cascade; final office hero overrides stacking at 800px and compact heading at 480px."
+      },
+      {
+        "name": "office-wide-min",
+        "value": "1800px",
+        "source": "Final office hero CSS"
+      },
+      {
+        "name": "office-stack",
+        "value": "800px",
+        "source": "Final office hero CSS",
+        "purpose": "One column, alternate gradient and mobile video source."
+      },
+      {
+        "name": "office-mobile",
+        "value": "480px",
+        "source": "Final office hero CSS",
+        "purpose": "20px global gutters, compact title/signature/form."
+      }
+    ],
+    "officeGradient": {
+      "source": "lib/landing.ts — final Full-width office hero block, .office-gradient",
+      "desktop": "linear-gradient(90deg,rgba(4,16,38,.97) 0%,rgba(5,22,47,.91) 28%,rgba(9,35,67,.54) 64%,rgba(12,35,58,.22) 100%)",
+      "mobile": "linear-gradient(90deg,rgba(4,16,38,.95),rgba(5,22,47,.83) 54%,rgba(9,35,67,.61))",
+      "mobileMaxWidth": "800px"
+    },
+    "layout": {
+      "source": "lib/landing.ts — final Full-width office hero block",
+      "containerMaxWidth": "none",
+      "containerGutters": "clamp(20px,4.5vw,96px)",
+      "heroMinHeight": "100svh",
+      "stackMaxWidth": "800px"
     }
   },
   "components": [
@@ -62,9 +160,84 @@
       "name": "Primary Button",
       "kind": "button",
       "refersTo": "button-primary",
-      "description": "Ação comercial principal",
-      "html": "<button class=\"ds-btn\">Solicitar demonstração</button>",
-      "css": ".ds-btn{background:#2563EB;color:white;border:0;border-radius:999px;padding:14px 26px;font:700 15px \"Plus Jakarta Sans\",system-ui,sans-serif;cursor:pointer;transition:background .18s ease}.ds-btn:hover{background:#1D4ED8}.ds-btn:focus-visible{outline:3px solid #7C3AED;outline-offset:3px}"
+      "description": "Chamada à ação implementada na landing.",
+      "html": "<a class=\"ds-button-primary\" href=\"#contato\">Solicitar demonstração</a>",
+      "css": ".ds-button-primary{font-family:'Plus Jakarta Sans',system-ui,-apple-system,'Segoe UI',Roboto,sans-serif;display:inline-flex;align-items:center;justify-content:center;gap:9px;font-size:15px;font-weight:700;letter-spacing:.01em;padding:14px 26px;border-radius:999px;text-decoration:none;cursor:pointer;transition:transform .18s ease,box-shadow .18s ease,background .18s ease;background:var(--primary,#2563EB);color:#fff;border:0;}.ds-button-primary:hover{transform:translateY(-2px);background:var(--primary-dark,#1D4ED8);box-shadow:0 12px 34px rgba(37,99,235,.28);}.ds-button-primary:focus-visible{outline:3px solid rgba(37,99,235,.45);outline-offset:2px}"
+    },
+    {
+      "name": "Ghost Button",
+      "kind": "button",
+      "refersTo": "button-ghost",
+      "description": "Chamada à ação implementada na landing.",
+      "html": "<a class=\"ds-button-ghost\" href=\"#contato\">Solicitar demonstração</a>",
+      "css": ".ds-button-ghost{font-family:'Plus Jakarta Sans',system-ui,-apple-system,'Segoe UI',Roboto,sans-serif;display:inline-flex;align-items:center;justify-content:center;gap:9px;font-size:15px;font-weight:700;letter-spacing:.01em;padding:14px 26px;border-radius:999px;text-decoration:none;cursor:pointer;transition:transform .18s ease,box-shadow .18s ease,background .18s ease;background:rgba(255,255,255,.75);color:var(--primary,#2563EB);border:1.5px solid var(--primary-border,#DBEAFE);}.ds-button-ghost:hover{transform:translateY(-2px);background:var(--primary-soft,#EFF6FF);border-color:var(--primary,#2563EB);}.ds-button-ghost:focus-visible{outline:3px solid rgba(37,99,235,.45);outline-offset:2px}"
+    },
+    {
+      "name": "White Button",
+      "kind": "button",
+      "refersTo": "button-white",
+      "description": "Chamada à ação implementada na landing.",
+      "html": "<a class=\"ds-button-white\" href=\"#contato\">Solicitar demonstração</a>",
+      "css": ".ds-button-white{font-family:'Plus Jakarta Sans',system-ui,-apple-system,'Segoe UI',Roboto,sans-serif;display:inline-flex;align-items:center;justify-content:center;gap:9px;font-size:15px;font-weight:700;letter-spacing:.01em;padding:14px 26px;border-radius:999px;text-decoration:none;cursor:pointer;transition:transform .18s ease,box-shadow .18s ease,background .18s ease;background:#fff;color:var(--primary,#2563EB);border:0;}.ds-button-white:hover{transform:translateY(-2px);box-shadow:0 14px 34px rgba(11,17,45,.3);}.ds-button-white:focus-visible{outline:3px solid rgba(37,99,235,.45);outline-offset:2px}"
+    },
+    {
+      "name": "Lead Field",
+      "kind": "input",
+      "refersTo": "field",
+      "description": "Campo do formulário comercial.",
+      "html": "<label class=\"ds-field\">Nome<input placeholder=\"Seu nome\" autocomplete=\"name\"></label>",
+      "css": ".ds-field{font-family:'Plus Jakarta Sans',system-ui,-apple-system,'Segoe UI',Roboto,sans-serif;display:block;color:#0F172A;font-size:14.5px}.ds-field input{font-family:'Plus Jakarta Sans',system-ui,-apple-system,'Segoe UI',Roboto,sans-serif;display:block;width:100%;height:48px;border-radius:var(--r-md,12px);border:1px solid var(--border,#E2E8F0);background:#FBFCFE;padding:0 14px 0 42px;font-size:14.5px;color:var(--ink,#0F172A);transition:border-color .15s ease,box-shadow .15s ease}.ds-field input::placeholder{color:#52627a;opacity:1}.ds-field input:focus{outline:none;border-color:var(--primary,#2563EB);background:#fff;box-shadow:0 0 0 4px rgba(37,99,235,.12)}"
+    },
+    {
+      "name": "Feature Card",
+      "kind": "card",
+      "refersTo": "feature-card",
+      "description": "Cartão claro de recurso.",
+      "html": "<article class=\"ds-feature\"><h3>Atendimento centralizado</h3><p>Organize as conversas da sua equipe.</p></article>",
+      "css": ".ds-feature{font-family:'Plus Jakarta Sans',system-ui,-apple-system,'Segoe UI',Roboto,sans-serif;background:var(--white,#fff);border:1px solid var(--border-soft,#EDF1F8);border-radius:var(--r-lg,16px);padding:26px 22px;box-shadow:var(--shadow-sm,0 2px 12px rgba(15,23,42,.06));transition:transform .22s ease,box-shadow .22s ease}.ds-feature:hover{transform:translateY(-5px);box-shadow:var(--shadow-md,0 8px 30px rgba(15,23,42,.10))}.ds-feature h3{font-size:15.5px;font-weight:700;letter-spacing:-.01em;margin:0 0 7px;color:#0F172A}.ds-feature p{font-size:13.5px;line-height:1.6;color:#475569;margin:0}"
+    },
+    {
+      "name": "Status Chip",
+      "kind": "chip",
+      "refersTo": "status-chip",
+      "description": "Estado textual em superfície verde suave.",
+      "html": "<span class=\"ds-status\">Ativo</span>",
+      "css": ".ds-status{font-family:'Plus Jakarta Sans',system-ui,-apple-system,'Segoe UI',Roboto,sans-serif;display:inline-flex;align-items:center;gap:5px;background:var(--green-soft,#DCFCE7);color:var(--green-ink,#166534);font-size:10px;font-weight:800;padding:3px 9px;border-radius:var(--r-pill,999px)}.ds-status::before{content:\"\";width:5px;height:5px;border-radius:50%;background:#059669}"
+    },
+    {
+      "name": "Navigation",
+      "kind": "nav",
+      "description": "Navegação meia-noite com marca oficial horizontal branca; mobile mantém superfície escura.",
+      "html": "<nav class=\"ds-nav\" aria-label=\"Principal\"><a href=\"#produto\">Produto</a><a href=\"#recursos\">Recursos</a><a href=\"#contato\">Contato</a></nav>",
+      "css": ".ds-nav{font-family:'Plus Jakarta Sans',system-ui,-apple-system,'Segoe UI',Roboto,sans-serif;display:flex;gap:30px;align-items:center;padding:20px 24px;background:#07152e;border-bottom:1px solid #203454}.ds-nav a{font-size:14.5px;font-weight:600;color:#d9e7fd;text-decoration:none;transition:color .15s ease}.ds-nav a:hover{color:#7bcbff}.ds-nav a:focus-visible{outline:3px solid rgba(37,99,235,.45);outline-offset:2px}"
+    },
+    {
+      "name": "Hero Primary Button",
+      "kind": "button",
+      "refersTo": "hero-button-primary",
+      "description": "Variante azul de ação no hero escuro.",
+      "html": "<a class=\"ds-hero-cta\" href=\"#contato\">Solicitar demonstração</a>",
+      "css": ".ds-hero-cta{display:inline-flex;align-items:center;justify-content:center;font-family:Plus Jakarta Sans,system-ui,sans-serif;font-size:15px;font-weight:700;background:#2967ee;color:#fff;padding:14px 26px;border-radius:999px;text-decoration:none;transition:transform .18s ease}.ds-hero-cta:hover{transform:translateY(-2px)}.ds-hero-cta:focus-visible{outline:3px solid rgba(37,99,235,.45);outline-offset:2px}"
     }
-  ]
+  ],
+  "narrative": {
+    "overview": "Extração do hero autorizado: escritório desenhado transforma-se em escritório realista num fundo HyperFrames de 12s, coberto por gradiente navy da esquerda para a direita. Marca oficial branca, título branco/ciano, formulário branco e mascote estático no primeiro plano. Contêiner global fluido; seções inferiores mantêm estilos claros.",
+    "keyCharacteristics": [
+      "Hero de escritório em largura integral com gradiente navy",
+      "Títulos compactos e encorpados",
+      "Botões em cápsula e cartões arredondados",
+      "Contêiner global fluido com gutters de 4.5vw limitados a 20–96px"
+    ],
+    "rules": [],
+    "dos": [
+      "Do preservar a família tipográfica, o azul e os mascotes.",
+      "Do respeitar a cascata final e conferir mobile.",
+      "Do preservar logos oficiais e controles de movimento do filme."
+    ],
+    "donts": [
+      "Don’t restaurar valores sobrescritos da implementação anterior.",
+      "Don’t apresentar exemplos de interface como métricas verificadas.",
+      "Don’t aplicar o fundo escuro do hero globalmente às seções inferiores."
+    ]
+  }
 }

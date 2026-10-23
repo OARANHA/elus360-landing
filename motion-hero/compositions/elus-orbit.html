@@ -1,0 +1,35 @@
+<template>
+<style>
+#root{position:absolute;inset:0;font-family:Outfit,sans-serif;background:#07152e;color:#fff;overflow:hidden}
+.orbit{position:absolute;left:125px;top:150px;width:710px;height:270px;border:1px solid #274c83;border-radius:50%;transform:rotate(-14deg)}
+.orbit.two{left:185px;top:95px;width:580px;height:370px;transform:rotate(19deg);border-color:#343e86}
+#mascot-art{position:absolute;left:305px;top:25px;width:365px;height:475px;object-fit:contain;z-index:3}
+.panel{position:absolute;width:245px;padding:22px 24px;background:#11284b;border-radius:14px;box-sizing:border-box;z-index:4}
+.panel strong{font-size:27px;font-weight:600;display:block;margin-bottom:9px;letter-spacing:-.02em}.panel p{font-size:19px;margin:0;color:#b8ceeb;line-height:1.4}
+#card-chat{left:45px;top:100px}#card-ai{left:665px;top:190px}#card-crm{left:80px;top:345px}
+.card-dot{display:block;width:10px;height:10px;background:#52bcff;border-radius:50%;margin-bottom:14px}.ai .card-dot{background:#ad85ff}.crm .card-dot{background:#588dff}
+.signal{position:absolute;width:11px;height:11px;background:#68c8ff;border-radius:50%;left:285px;top:225px;z-index:2}
+#signal-two{left:680px;top:350px;background:#aa89ff}
+#ground{position:absolute;left:310px;top:479px;width:345px;height:18px;border-radius:50%;background:#0b203e}
+</style>
+<div data-hf-id="hf-u92s" id="root" data-composition-id="elus-orbit" data-width="960" data-height="540">
+<div data-hf-id="hf-u6gg" id="scene" class="clip" data-start="0" data-duration="8" data-track-index="0">
+<div data-hf-id="hf-z1kv" class="orbit" aria-hidden="true"></div><div data-hf-id="hf-70ul" class="orbit two" aria-hidden="true"></div><div data-hf-id="hf-7hg0" id="ground"></div>
+<div data-hf-id="hf-dlnc" id="signal-one" class="signal" data-layout-ignore></div><div data-hf-id="hf-du0y" id="signal-two" class="signal" data-layout-ignore></div>
+<img data-hf-id="hf-my8i" id="mascot-art" src="assets/mascot-elus.png" alt="Mascote ELUS" data-layout-allow-overlap>
+<div data-hf-id="hf-gzst" class="panel" id="card-chat"><span data-hf-id="hf-qnq9" class="card-dot"></span><strong data-hf-id="hf-0o84">Atendimento</strong><p data-hf-id="hf-g4z2">Conversas com contexto</p></div>
+<div data-hf-id="hf-utf7" class="panel ai" id="card-ai"><span data-hf-id="hf-vlit" class="card-dot"></span><strong data-hf-id="hf-xhro">Agentes de IA</strong><p data-hf-id="hf-044l">Conhecimento conectado</p></div>
+<div data-hf-id="hf-nn5h" class="panel crm" id="card-crm"><span data-hf-id="hf-wsfw" class="card-dot"></span><strong data-hf-id="hf-p5tu">CRM</strong><p data-hf-id="hf-i9dv">O próximo passo, claro.</p></div>
+</div></div>
+<script>
+// Orbit-field composition adapted from the installed locked-nucleus-orbit primitive.
+const tl=gsap.timeline({paused:true});
+tl.fromTo('#mascot-art',{y:0,rotation:-1},{y:-13,rotation:1,duration:4,ease:'sine.inOut'},0).to('#mascot-art',{y:0,rotation:-1,duration:4,ease:'sine.inOut'},4);
+tl.fromTo('#card-chat',{x:0,y:0},{x:8,y:-7,duration:4,ease:'sine.inOut'},0).to('#card-chat',{x:0,y:0,duration:4,ease:'sine.inOut'},4);
+tl.fromTo('#card-ai',{x:0,y:0},{x:-8,y:9,duration:4,ease:'sine.inOut'},0).to('#card-ai',{x:0,y:0,duration:4,ease:'sine.inOut'},4);
+tl.fromTo('#card-crm',{x:0,y:0},{x:8,y:6,duration:4,ease:'sine.inOut'},0).to('#card-crm',{x:0,y:0,duration:4,ease:'sine.inOut'},4);
+tl.fromTo('#signal-one',{x:0,y:0,opacity:.8},{x:140,y:-70,opacity:1,duration:2,ease:'sine.inOut'},0).to('#signal-one',{x:310,y:25,duration:2,ease:'sine.inOut'},2).to('#signal-one',{x:130,y:140,duration:2,ease:'sine.inOut'},4).to('#signal-one',{x:0,y:0,opacity:.8,duration:2,ease:'sine.inOut'},6);
+tl.fromTo('#signal-two',{x:0,y:0},{x:-160,y:65,duration:2,ease:'sine.inOut'},0).to('#signal-two',{x:-350,y:-20,duration:2,ease:'sine.inOut'},2).to('#signal-two',{x:-170,y:-135,duration:2,ease:'sine.inOut'},4).to('#signal-two',{x:0,y:0,duration:2,ease:'sine.inOut'},6);
+tl.fromTo('.card-dot',{opacity:.5},{opacity:1,duration:2,stagger:.5,ease:'sine.inOut'},0).to('.card-dot',{opacity:.5,duration:2,stagger:.5,ease:'sine.inOut'},5);
+window.__timelines['elus-orbit']=tl;
+</script></template>

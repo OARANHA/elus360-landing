@@ -1,0 +1,6 @@
+<template><style>#root{position:absolute;inset:0;background:#edf4fa;overflow:hidden}.office-image{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}#office-real{opacity:0}</style><div data-hf-id="hf-zje8" id="root" data-composition-id="office" data-width="1600" data-height="900"><div data-hf-id="hf-3shm" id="office-scene" class="clip" data-start="0" data-duration="12" data-track-index="0"><img data-hf-id="hf-qjry" id="office-lines" class="office-image" src="assets/office-sketch.jpg" alt="Escritório moderno em desenho arquitetônico azul" data-layout-allow-overlap><img data-hf-id="hf-i5km" id="office-real" class="office-image" src="assets/office-real.jpg" alt="O mesmo escritório em imagem realista" data-layout-allow-overlap></div></div><script>
+const tl=gsap.timeline({paused:true});
+tl.fromTo('#office-real',{opacity:0,clipPath:'inset(0 100% 0 0)'},{opacity:1,clipPath:'inset(0 0% 0 0)',duration:6,ease:'power1.inOut'},2);
+tl.to('#office-real',{opacity:0,duration:2,ease:'sine.inOut'},10);
+window.__timelines.office=tl;
+</script></template>
