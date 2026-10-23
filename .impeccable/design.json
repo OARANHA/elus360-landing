@@ -85,9 +85,14 @@
         "purpose": "Animações e transições desligadas por prefers-reduced-motion: reduce."
       },
       {
-        "name": "hero-film",
-        "value": "12s silent loop, 1600x900",
-        "purpose": "Composição HyperFrames motion-office: desenho de escritório transforma-se em escritório realista; pausa manual, offscreen/hidden e poster para movimento reduzido."
+        "name": "hero-materialization",
+        "value": "16s CSS loop; HyperFrames 16s source",
+        "purpose": "Desenho distribuído + materialização do escritório com três pessoas ilustradas e dois mascotes; pausa na viewport e movimento reduzido."
+      },
+      {
+        "name": "followup-journey",
+        "value": "CSS loop, scroll-gated; HyperFrames 10s source",
+        "purpose": "Novo contato → ELUS → retorno agendado, sem áudio, respeitando movimento reduzido."
       }
     ],
     "breakpoints": [
@@ -132,7 +137,7 @@
         "name": "office-stack",
         "value": "800px",
         "source": "Final office hero CSS",
-        "purpose": "One column, alternate gradient and mobile video source."
+        "purpose": "Uma coluna, gradiente responsivo e equipe parcialmente visível na imagem de fundo."
       },
       {
         "name": "office-mobile",
@@ -142,9 +147,9 @@
       }
     ],
     "officeGradient": {
-      "source": "lib/landing.ts — final Full-width office hero block, .office-gradient",
-      "desktop": "linear-gradient(90deg,rgba(4,16,38,.97) 0%,rgba(5,22,47,.91) 28%,rgba(9,35,67,.54) 64%,rgba(12,35,58,.22) 100%)",
-      "mobile": "linear-gradient(90deg,rgba(4,16,38,.95),rgba(5,22,47,.83) 54%,rgba(9,35,67,.61))",
+      "source": "lib/landing.ts — final ELUS 360 materialization block",
+      "desktop": "linear-gradient(90deg,rgba(4,16,38,.97) 0%,rgba(5,22,47,.94) 25%,rgba(9,35,67,.55) 60%,rgba(12,35,58,.29) 100%)",
+      "mobile": "linear-gradient(90deg,rgba(4,16,38,.96),rgba(5,22,47,.83) 52%,rgba(9,35,67,.66))",
       "mobileMaxWidth": "800px"
     },
     "layout": {
@@ -221,7 +226,7 @@
     }
   ],
   "narrative": {
-    "overview": "Extração do hero autorizado: escritório desenhado transforma-se em escritório realista num fundo HyperFrames de 12s, coberto por gradiente navy da esquerda para a direita. Marca oficial branca, título branco/ciano, formulário branco e mascote estático no primeiro plano. Contêiner global fluido; seções inferiores mantêm estilos claros.",
+    "overview": "Hero em largura total com escritório arquitetônico que se materializa sem wipe horizontal; três pessoas ilustradas e dois mascotes ELUS, gradiente navy, formulário intacto. A seção de perda de leads apresenta a jornada animada de acompanhamento. Composições editáveis HyperFrames em motion-office e motion-followup.",
     "keyCharacteristics": [
       "Hero de escritório em largura integral com gradiente navy",
       "Títulos compactos e encorpados",
