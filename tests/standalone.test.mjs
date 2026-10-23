@@ -1,6 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { readFileSync } from 'node:fs';
+import { readFileSync, existsSync, statSync } from 'node:fs';
 import { validateLead, validWebhookUrl, signature, makeServer } from '../scripts/standalone-server.mjs';
 
 test('export preserva a landing e o formulário comercial', () => {
@@ -17,6 +17,26 @@ test('export preserva a landing e o formulário comercial', () => {
   assert.match(html, /src="\/brand\/followup-actions\.webp"/);
   assert.match(html, /id="leadForm"/);
   assert.match(html, /id="cinemaFollowupCTA"/);
+});
+
+
+test('os seis arquivos WebP existem no build e têm assinatura válida', () => {
+  const files = [
+    'hero-office.webp',
+    'hero-team.webp',
+    'followup-scene.webp',
+    'followup-mascot.webp',
+    'followup-lead.webp',
+    'followup-actions.webp',
+  ];
+  for (const file of files) {
+    const path = 'public/brand/' + file;
+    assert.ok(existsSync(path), 'Arte ausente: ' + path);
+    assert.ok(statSync(path).size > 10000, 'Arte inválida ou vazia: ' + path);
+    const bytes = readFileSync(path);
+    assert.equal(bytes.toString('ascii', 0, 4), 'RIFF', 'Cabeçalho WebP: ' + file);
+    assert.equal(bytes.toString('ascii', 8, 12), 'WEBP', 'Formato WebP: ' + file);
+  }
 });
 
 test('lead exige consentimento e campos adequados', () => {
