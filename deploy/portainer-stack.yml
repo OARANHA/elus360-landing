@@ -3,14 +3,19 @@ services:
     image: ghcr.io/oaranha/elus360-landing:main
     pull_policy: always
     restart: unless-stopped
+    mem_limit: 256m
     environment:
       NODE_ENV: production
       PORT: "3000"
       ELUS_LEADS_WEBHOOK_URL: "${ELUS_LEADS_WEBHOOK_URL:-}"
       ELUS_LEADS_WEBHOOK_SECRET: "${ELUS_LEADS_WEBHOOK_SECRET:-}"
       ELUS_WHATSAPP_NUMBER: "${ELUS_WHATSAPP_NUMBER:-}"
+    expose:
+      - "3000"
     ports:
       - "127.0.0.1:18080:3000"
+    networks:
+      - vigia-edge
     read_only: true
     tmpfs:
       - /tmp:size=16m
@@ -24,3 +29,8 @@ services:
       timeout: 5s
       retries: 3
       start_period: 10s
+
+networks:
+  vigia-edge:
+    external: true
+    name: vigia-edge
