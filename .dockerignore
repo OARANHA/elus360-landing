@@ -1,0 +1,9 @@
+*
+!lib/
+!lib/landing.ts
+!scripts/
+!scripts/export-standalone.mjs
+!scripts/standalone-server.mjs
+!public/
+!public/brand/
+!public/brand/**

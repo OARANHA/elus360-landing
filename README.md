@@ -8,12 +8,15 @@ Landing page responsiva para apresentar o ELUS360 e captar novos clientes.
 
 ## Conteúdo
 
-- Hero em largura total com escritório que passa de desenho em traço para imagem real, vídeo adaptado para celular, pausa e preferência por movimento reduzido.
+- Hero em largura total com escritório que se materializa em diversos pontos (sem transição de cortina); ilustração de três pessoas com dois mascotes oficiais, pausa manual e respeito a movimento reduzido.
 - Identidade visual, logos oficiais, mascote e formulário comercial.
 - Captura de leads via `POST /api/leads`, persistida em Cloudflare D1.
 - Área `/gestao`, protegida por autenticação ChatGPT e autorização por `SITE_OWNER_EMAIL`.
 - Política de privacidade em `/privacidade`.
-- Projetos editáveis HyperFrames em `motion-office/` e `motion-hero/`.
+- Projetos editáveis HyperFrames em `motion-office/`, `motion-followup/` e `motion-hero/`.
+- Cena animada de acompanhamento na seção “Você não perde venda por falta de lead”, ilustrando novo contato → ELUS → lembrete/retorno.
+
+A nova hero e a jornada de acompanhamento são animadas diretamente no navegador por CSS/JS, sem depender de MP4. Os vídeos anteriores permanecem no repositório apenas como histórico. As composições HyperFrames foram atualizadas como fonte editável; renderização/check HyperFrames e QA em browser da nova versão ainda estão pendentes.
 
 ## Executar
 

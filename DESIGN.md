@@ -118,13 +118,13 @@ components:
 
 Este documento registra a implementação em `lib/landing.ts`, incluindo a cascata final de refinamentos comerciais. É uma extração do sistema existente, não uma aprovação de uma nova direção estética ou de uma metáfora criativa.
 
-A identidade usa o logo oficial branco ELUS by Wandora: versão horizontal na navegação e vertical no rodapé. A navegação conserva o azul meia-noite; o hero usa um filme de escritório em tela inteira, escurecido por gradiente azul da esquerda para a direita, com título branco e destaque ciano. O formulário permanece branco. As seções inferiores conservam suas superfícies claras, detalhes violetas e cores de estado. O mascote de referência foi recolorido com ImageGen em azul, ciano, violeta e magenta, com transparência alfa nativa.
+A identidade usa o logo oficial branco ELUS by Wandora: versão horizontal na navegação e vertical no rodapé. A navegação conserva o azul meia-noite; o hero usa uma composição responsiva do escritório em tela inteira, escurecido por gradiente azul da esquerda para a direita, com título branco e destaque ciano. O formulário permanece branco. As seções inferiores conservam suas superfícies claras, detalhes violetas e cores de estado. O mascote de referência foi recolorido com ImageGen em azul, ciano, violeta e magenta, com transparência alfa nativa.
 
 **Key Characteristics:**
 
 - Hero e navegação azul meia-noite com marca oficial branca e destaque ciano.
-- Escritório desenhado em linhas que se transforma em escritório realista, com poster e controle de movimento.
-- Mascote pequeno e estático como assinatura no primeiro plano.
+- Escritório arquitetônico desenhado que se materializa em cena realista por traços locais, sem máscara de cortina; equipe humana ilustrada e dois mascotes ELUS.
+- Mascote no primeiro plano e mascotes adicionais inseridos como colaboradores da equipe no escritório.
 - Títulos compactos, botões em cápsula e cartões suavemente arredondados.
 - Exemplos de interface com mais densidade que o conteúdo comercial.
 
@@ -154,7 +154,7 @@ O contêiner global é fluido: largura de 100%, sem max-width e gutters de clamp
 
 O hero ocupa no mínimo 100svh no desktop, com padding de 132px 0 58px. A grade tem altura mínima de calc(100svh - 190px), colunas minmax(0,1fr) / minmax(340px,420px) e gap de clamp(40px,8vw,180px). Em 1100px, o formulário usa coluna de 320–370px e gap de 35px. Em 800px, a grade empilha com gap de 28px, sem altura mínima; texto e formulário têm máximo de 640px. Em 480px, o hero usa padding de 112px 0 64px. Em 1800px, a coluna do formulário tem 450px.
 
-O filme cobre todo o hero com object-fit:cover; seu enquadramento passa de center para 58% center em 800px. O mascote fica no primeiro plano na assinatura, com largura fluida de 126–196px, 130px em 1100px/800px e 108px em 480px. O formulário ocupa sua coluna inteira; padding de 34px 30px, 28px 24px em 1100px, 28px 22px em 480px e 40px 34px em 1800px.
+O cenário ocupa todo o hero com imagens sobrepostas em object-fit:cover; o realismo surge por mudanças simultâneas de nitidez/opacidade e traços desenhados sem varredura horizontal. O mascote fica no primeiro plano na assinatura, com largura fluida de 126–196px, 130px em 1100px/800px e 108px em 480px. O formulário ocupa sua coluna inteira; padding de 34px 30px, 28px 24px em 1100px, 28px 22px em 480px e 40px 34px em 1800px.
 
 Em 1080px, recursos passam de quatro para duas colunas; produto e agentes ficam em uma coluna. Em 960px, navegação vira menu móvel, problemas ficam em uma coluna, fluxo fica vertical e grades de diferenciais/públicos passam a duas colunas. Em 640px, essas grades, recursos e rodapé ficam em uma coluna; sidebar ilustrativa e chat flutuante desaparecem. Seções usam o ritmo do frontmatter; cabeçalhos de seção têm máximo de 720px, FAQ de 760px e timeline de 780px.
 
@@ -162,7 +162,7 @@ Em 1080px, recursos passam de quatro para duas colunas; produto e agentes ficam 
 
 A profundidade combina superfícies tonais, bordas suaves e sombras. O formulário no hero usa `0 22px 60px #03102555`; a sombra de formulário anterior permanece registrada como definição base. Cartões usam a sombra pequena; mockup usa a grande. Hover de cartões eleva de 4px a 5px. Os valores compartilhados estão na extensão do sidecar.
 
-A navegação fixa mantém o fundo meia-noite após rolagem, sem blur, com borda azul escura. O filme de fundo foi renderizado com HyperFrames a partir da composição `motion-office`: loop silencioso de 12 segundos, 1600×900, com desenho de escritório que se revela realista. O controle de pausar/retomar fica no canto inferior direito (18px da base; gutter fluido à direita). Pausa fora da viewport e quando a página fica oculta; preferência por movimento reduzido mostra o poster. Falha de reprodução também apresenta a imagem estática. O gradiente CSS independente do vídeo garante contraste para o conteúdo. A animação flutuante permanece em outras ilustrações. A regra final de movimento reduzido desliga animações, transições e rolagem suave. Elementos de reveal permanecem visíveis na implementação final.
+A navegação fixa mantém o fundo meia-noite após rolagem, sem blur, com borda azul escura. A landing usa animações CSS de 16 segundos para o escritório e animação fluida de fluxo comercial na seção de problema; os arquivos HyperFrames editáveis são `motion-office` e `motion-followup` (sem MP4 novo nem check CLI verificado). O controle de pausar/retomar fica no canto inferior direito (18px da base; gutter fluido à direita). Pausa da animação fora da viewport e quando a aba está oculta; preferência por movimento reduzido mostra a fotografia realista junto com a equipe ilustrada, sem animação. Não há dependência de reprodução de vídeo. O gradiente CSS independente do vídeo garante contraste para o conteúdo. A animação flutuante permanece em outras ilustrações. A regra final de movimento reduzido desliga animações, transições e rolagem suave. Elementos de reveal permanecem visíveis na implementação final.
 
 ## Shapes
 
@@ -194,9 +194,9 @@ Barra fixa de 76px, logo horizontal oficial com altura automática e marcador 36
 
 Preservar proporção e transparência das marcas oficiais. O rodapé usa a versão vertical, com largura de 150px, reduzida a 130px em mobile. O mascote recolorido mantém alfa nativa e aparece como assinatura estática, sem substituir o filme de escritório.
 
-A camada `.office-gradient` usa `linear-gradient(90deg,rgba(4,16,38,.97) 0%,rgba(5,22,47,.91) 28%,rgba(9,35,67,.54) 64%,rgba(12,35,58,.22) 100%)`. Até 800px passa a `linear-gradient(90deg,rgba(4,16,38,.95),rgba(5,22,47,.83) 54%,rgba(9,35,67,.61))`. Os valores vêm do bloco final “Full-width office hero” em `lib/landing.ts`.
+A camada `.office-gradient` usa `linear-gradient(90deg,rgba(4,16,38,.97) 0%,rgba(5,22,47,.94) 25%,rgba(9,35,67,.55) 60%,rgba(12,35,58,.29) 100%)`. Até 800px passa para gradiente mais denso sobre a equipe, conforme o bloco final em `lib/landing.ts`.
 
-O vídeo usa poster de 1600×900 e fonte móvel até 800px. O controle de movimento tem texto acessível, estado pressionado e foco visível. A preferência por movimento reduzido oculta vídeo e controle e apresenta o poster. A variante ghost do hero permanece transparente com borda azul escura e texto claro; o CTA principal continua azul.
+A cena usa as imagens institucionais de traço e realista em 1600×900 e uma equipe ilustrada em SVG; adapta composição e gradiente abaixo de 800px. O controle de movimento tem texto acessível, estado pressionado e foco visível; pausa também os personagens, traços e transição fotográfica. A preferência por movimento reduzido oculta vídeo e controle e apresenta o poster. A variante ghost do hero permanece transparente com borda azul escura e texto claro; o CTA principal continua azul.
 
 ### FAQ
 
@@ -216,3 +216,9 @@ Perguntas são botões de largura integral em cartões de curva média. Uma resp
 - **Don't** distorcer o logo oficial nem remover o poster, a pausa ou o suporte a movimento reduzido.
 - **Don't** tratar indicadores do mockup como métricas comerciais verificadas.
 - **Don't** apresentar esta extração como uma nova direção estética aprovada pelo proprietário.
+
+## Evolução visual — 23/10/2026
+
+- **Hero:** traços arquitetônicos são desenhados em regiões distribuídas; a fotografia ganha nitidez e saturação; três colaboradores humanos em SVG e dois mascotes ELUS surgem progressivamente. O sentido de revelação não depende da posição horizontal. As figuras são ilustrações comerciais, não fotografias de pessoas reais.
+- **Problema/acompanhamento:** representação visual de novo interesse → ELUS → próximo retorno agendado, com caminhos animados, pausa fora da viewport, responsividade e `prefers-reduced-motion`.
+- **Projetos HyperFrames:** fontes correspondentes em `motion-office/` e `motion-followup/`; a landing utiliza a animação no próprio DOM para fluidez e carregamento mais leve. A renderização da nova cena pelo CLI HyperFrames e capturas visuais da página ainda não foram executadas.
