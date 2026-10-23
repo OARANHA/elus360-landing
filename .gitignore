@@ -50,3 +50,7 @@ yarn-error.log*
 
 /motion-office/.hyperframes/
 /motion-office/node_modules/
+
+/motion-followup/.hyperframes/
+/motion-followup/node_modules/
+/standalone-dist/
