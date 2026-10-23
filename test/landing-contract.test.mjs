@@ -43,6 +43,7 @@ test("uses an editorial folio and a media-free title page", () => {
 
 test("keeps all problem artwork and accessible information with the mascot", () => {
   const problem = sectionMarkup("problema");
+  assert.match(problem, /<div class="followup-stage cinema-followup"[^>]*role="group"/, "the live composition has the class selectors used by its responsive styling and player");
   for (const asset of [
     "/brand/followup-scene.webp",
     "/brand/followup-lead.webp",
