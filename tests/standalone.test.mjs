@@ -25,7 +25,7 @@ test('endereço autorizado é o webhook do ELUS', () => {
   assert.equal(validWebhookUrl('http://elus.wandora.com.br/api/v1/webhooks/in/token123456'), false);
 });
 test('assinatura conforme contrato HMAC SHA-256 ELUS', () => {
-  assert.equal(signature('{"nome":"Ana"}', 'segredo'), 'f16a66fd0934b4648ed966a57146d8ac43a0789b0363df72e4cae2c46ac5315ae');
+  assert.equal(signature('{"nome":"Ana"}', 'segredo'), '858ac179392a709e751697cdee3e56e2726ae572a055e9acfcee22567c79c790');
 });
 test('servidor sobe, responde healthz e não aceita formulário sem origem configurada', async () => {
   const server = makeServer();
