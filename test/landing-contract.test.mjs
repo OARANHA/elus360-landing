@@ -28,11 +28,16 @@ test("preserves the current landing section order", () => {
   ]);
 });
 
-test("keeps the current title page and uses the classic navigation", () => {
-  const titlePage = sectionMarkup("inicio");
-  assert.match(titlePage, /data-sc-chapter="inicio"/);
-  assert.doesNotMatch(titlePage, /<(?:img|video|picture|canvas)\b/i);
-  assert.match(titlePage, /A experiência do seu time vira/);
+test("keeps the live office hero and uses the classic navigation", () => {
+  const hero = sectionMarkup("inicio");
+  assert.match(html, /<section class="hero" id="inicio"[^>]*data-sc-chapter="inicio"/);
+  assert.match(hero, /office-sketch\.jpg/);
+  assert.match(hero, /hero-office\.webp/);
+  assert.match(hero, /hero-team\.webp/);
+  assert.match(hero, /class="hero-signature"/);
+  assert.match(hero, /Seu comercial inteiro/);
+  assert.match(hero, /id="heroLeadForm" data-lead-form/);
+  assert.match(hero, /id="motionToggle"/);
   assert.ok(/<header\b[^>]*class="navbar"/.test(html), "classic fixed navbar exists");
   assert.ok(!/class="chapter-folio/.test(html), "chapter folio is removed");
   const nav = html.match(/<nav\b[^>]*class="nav-links"[\s\S]*?<\/nav>/)?.[0] ?? "";
@@ -49,7 +54,7 @@ test("keeps the current title page and uses the classic navigation", () => {
   const mobileMenuRule = styles.slice(styles.lastIndexOf(".mobile-menu{"));
   assert.match(mobileMenuRule, /max-height:calc\(100dvh - 76px\)/);
   assert.match(mobileMenuRule, /overflow-y:auto/);
-  assert.match(titlePage, /href="https:\/\/elus\.wandora\.com\.br\/login"[^>]*>Entrar/);
+  assert.match(html, /href="https:\/\/elus\.wandora\.com\.br\/login"[^>]*>Entrar/);
 });
 
 test("keeps all problem artwork and accessible information with the mascot", () => {
@@ -123,7 +128,10 @@ test("the learning demonstration is labelled, local, and has a static explanatio
 test("keeps the lead form wired in the commercial chapter and honors the scroll sequence", () => {
   const commercial = sectionMarkup("cta-comercial");
   assert.ok(commercial.includes('id="leadForm"'), "lead form remains in the commercial chapter");
-  assert.ok(commercial.includes('id="contato"'), "contact anchor remains stable");
+  assert.ok(commercial.includes('id="contato-comercial"'), "commercial form keeps a unique anchor");
+  assert.equal((html.match(/id="contato"(?:\s|>)/g) ?? []).length, 1, "hero owns the contact anchor");
+  assert.match(commercial, /id="leadForm" data-lead-form/);
+  assert.match(html, /querySelectorAll\('\[data-lead-form\]'\)/, "both lead forms share the submission handler");
   assert.ok(html.includes("fetch('/api/leads'"), "lead submission endpoint remains wired");
   assert.ok(html.includes("scroll-padding-top:92px"), "anchor navigation leaves room for the sticky menu");
   assert.ok(html.includes("@media(prefers-reduced-motion:reduce)"), "reduced motion is respected");
