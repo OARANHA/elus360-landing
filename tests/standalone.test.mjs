@@ -266,12 +266,16 @@ test('Agentes mantém mascote e fluxo horizontal com linhas vivas e leitura aces
   assert.match(section, /src="\/brand\/mascot-elus\.png"/);
   assert.equal((section.match(/class="flow-card"/g) || []).length, 4);
   assert.equal((section.match(/class="agents-wire"/g) || []).length, 3);
+  assert.equal((section.match(/class="learning-step(?: is-active)?"/g) || []).length, 3);
+  assert.equal((section.match(/class="learning-select"/g) || []).length, 3);
   for (const title of ['Mensagem chega', 'Agente responde', 'Lead qualificado', 'Humano assume', 'Base de conhecimento', 'Supervisão humana']) assert.ok(section.includes(title));
   assert.match(html, /@media\(max-width:760px\)\{\.agents-grid/);
   const source = readFileSync('scripts/agents-motion.mjs', 'utf8');
   assert.match(source, /from 'motion\/mini'/);
   assert.match(source, /IntersectionObserver/);
   assert.match(source, /prefers-reduced-motion: reduce/);
-  assert.match(source, /strokeDashoffset/);
+  assert.match(html, /@keyframes agents-wire-travel/);
+  assert.match(html, /@keyframes agents-learning-travel/);
+  assert.match(source, /elus:learning-step/);
   new VmScript(readFileSync('public/brand/agents-motion.js', 'utf8'));
 });
