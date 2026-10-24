@@ -2,6 +2,7 @@ import test from 'node:test';
 import { Script as VmScript, runInNewContext } from 'node:vm';
 import assert from 'node:assert/strict';
 import { readFileSync, existsSync, statSync } from 'node:fs';
+import { createHash } from 'node:crypto';
 import { validateLead, validWebhookUrl, signature, makeServer } from '../scripts/standalone-server.mjs';
 
 test('export preserva a landing e o formulário comercial', () => {
@@ -69,7 +70,13 @@ test('servidor sobe, responde healthz e não aceita formulário sem origem confi
   try {
     const base = 'http://127.0.0.1:' + server.address().port;
     assert.equal((await fetch(base + '/healthz')).status, 200);
-    assert.equal((await fetch(base + '/')).status, 200);
+    const page = await fetch(base + '/');
+    assert.equal(page.status, 200);
+    const servedHtml = await page.text();
+    for (const path of ['/scrollcraft/scrollcraft.css', '/scrollcraft/scrollcraft.js', '/brand/followup-gsap.js', '/brand/journey-motion.js']) {
+      const fingerprint = createHash('sha256').update(readFileSync('public' + path)).digest('hex').slice(0, 12);
+      assert.ok(servedHtml.includes(path + '?v=' + fingerprint), 'Asset sem versão: ' + path);
+    }
     assert.equal((await fetch(base + '/privacidade')).status, 200);
     for (const [path, type] of [['/scrollcraft/scrollcraft.css', /text\/css/], ['/scrollcraft/scrollcraft.js', /javascript/]]) {
       const asset = await fetch(base + path);
