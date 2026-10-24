@@ -24,6 +24,7 @@ test('export preserva a landing e o formulário comercial', () => {
   assert.match(html, /src="\/brand\/problem-scroll\.js"/);
   assert.match(html, /src="\/brand\/problem-motion\.js"/);
   assert.match(html, /src="\/brand\/resources-motion\.js"/);
+  assert.match(html, /src="\/brand\/how-motion\.js"/);
   assert.doesNotMatch(html, /src="\/brand\/(?:journey-motion|followup-gsap)\.js"/);
   assert.doesNotMatch(html, /class="journey-stage"/);
   assert.doesNotMatch(html, /class="followup-stage cinema-followup"/);
@@ -77,7 +78,7 @@ test('servidor sobe, responde healthz e não aceita formulário sem origem confi
     const page = await fetch(base + '/');
     assert.equal(page.status, 200);
     const servedHtml = await page.text();
-    for (const path of ['/scrollcraft/scrollcraft.css', '/scrollcraft/scrollcraft.js', '/brand/problem-scroll.js', '/brand/problem-motion.js', '/brand/resources-motion.js']) {
+    for (const path of ['/scrollcraft/scrollcraft.css', '/scrollcraft/scrollcraft.js', '/brand/problem-scroll.js', '/brand/problem-motion.js', '/brand/resources-motion.js', '/brand/how-motion.js']) {
       const fingerprint = createHash('sha256').update(readFileSync('public' + path)).digest('hex').slice(0, 12);
       assert.ok(servedHtml.includes(path + '?v=' + fingerprint), 'Asset sem versão: ' + path);
     }
@@ -238,4 +239,21 @@ test('Recursos preserva as capacidades e usa Motion com adaptação de layout', 
   assert.match(source, /IntersectionObserver/);
   assert.match(source, /prefers-reduced-motion: reduce/);
   new VmScript(readFileSync('public/brand/resources-motion.js', 'utf8'));
+});
+
+test('Como funciona percorre sete etapas ilustradas pelo scroll', () => {
+  const html = readFileSync('standalone-dist/index.html', 'utf8');
+  const section = html.match(/<section class="section how-section" id="como-funciona"[\s\S]*?<\/section>/)?.[0];
+  assert.ok(section);
+  for (const title of ['A mensagem chega', 'O agente identifica o cliente', 'A IA responde com a sua base', 'O lead é qualificado e movido no funil', 'O humano assume com contexto', 'O follow-up é agendado', 'Sem resposta? Entra no Radar de risco']) {
+    assert.ok(section.includes(title), `Etapa ausente: ${title}`);
+  }
+  assert.equal((section.match(/data-how-step="\d"/g) || []).length, 7);
+  assert.equal((section.match(/data-how-scene="\d"/g) || []).length, 7);
+  assert.match(html, /@media\(max-width:900px\)\{\.how-layout/);
+  const source = readFileSync('scripts/how-motion.mjs', 'utf8');
+  assert.match(source, /from 'motion\/mini'/);
+  assert.match(source, /prefers-reduced-motion: reduce/);
+  assert.match(source, /requestAnimationFrame\(update\)/);
+  new VmScript(readFileSync('public/brand/how-motion.js', 'utf8'));
 });
