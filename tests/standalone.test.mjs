@@ -268,6 +268,8 @@ test('Agentes mantém mascote e fluxo horizontal com linhas vivas e leitura aces
   assert.equal((section.match(/class="agents-wire"/g) || []).length, 3);
   assert.equal((section.match(/class="learning-step(?: is-active)?"/g) || []).length, 3);
   assert.equal((section.match(/class="learning-select"/g) || []).length, 3);
+  assert.match(section, /class="learning-kicker">Uma evolução supervisionada/);
+  assert.match(html, /#agentes \.learning-heading \.learning-kicker\{display:block/);
   for (const title of ['Mensagem chega', 'Agente responde', 'Lead qualificado', 'Humano assume', 'Base de conhecimento', 'Supervisão humana']) assert.ok(section.includes(title));
   assert.match(html, /@media\(max-width:760px\)\{\.agents-grid/);
   const source = readFileSync('scripts/agents-motion.mjs', 'utf8');
