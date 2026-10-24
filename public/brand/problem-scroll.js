@@ -32,6 +32,9 @@
       tab.setAttribute('aria-selected', String(i === index));
       tab.tabIndex = i === index ? 0 : -1;
     });
+    if (typeof window.CustomEvent === 'function') {
+      stage.dispatchEvent(new window.CustomEvent('elus:scenechange', { detail: { index: index } }));
+    }
   }
 
   function update() {

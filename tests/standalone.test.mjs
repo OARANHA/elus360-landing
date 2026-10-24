@@ -22,6 +22,7 @@ test('export preserva a landing e o formulário comercial', () => {
   assert.match(html, /id="followupMotionToggle"/);
   assert.match(html, /id="followupTrack"/);
   assert.match(html, /src="\/brand\/problem-scroll\.js"/);
+  assert.match(html, /src="\/brand\/problem-motion\.js"/);
   assert.doesNotMatch(html, /src="\/brand\/(?:journey-motion|followup-gsap)\.js"/);
   assert.doesNotMatch(html, /class="journey-stage"/);
   assert.doesNotMatch(html, /class="followup-stage cinema-followup"/);
@@ -75,7 +76,7 @@ test('servidor sobe, responde healthz e não aceita formulário sem origem confi
     const page = await fetch(base + '/');
     assert.equal(page.status, 200);
     const servedHtml = await page.text();
-    for (const path of ['/scrollcraft/scrollcraft.css', '/scrollcraft/scrollcraft.js', '/brand/problem-scroll.js']) {
+    for (const path of ['/scrollcraft/scrollcraft.css', '/scrollcraft/scrollcraft.js', '/brand/problem-scroll.js', '/brand/problem-motion.js']) {
       const fingerprint = createHash('sha256').update(readFileSync('public' + path)).digest('hex').slice(0, 12);
       assert.ok(servedHtml.includes(path + '?v=' + fingerprint), 'Asset sem versão: ' + path);
     }
@@ -164,6 +165,8 @@ test('as três cenas seguem a rolagem e os controles permanecem acessíveis', ()
   const panels = Array.from({ length: 3 }, makeNode);
   const arts = Array.from({ length: 3 }, makeNode);
   const stage = makeNode();
+  const sceneChanges = [];
+  stage.dispatchEvent = event => sceneChanges.push(event.detail.index);
   stage.offsetHeight = 600;
   stage.querySelectorAll = selector => ({ '[data-story-tab]': tabs, '[data-scene]': panels, '[data-art-scene]': arts })[selector];
   const track = makeNode();
@@ -175,6 +178,7 @@ test('as três cenas seguem a rolagem e os controles permanecem acessíveis', ()
   const listeners = {};
   const motionPreference = { matches: false };
   const browser = {
+    CustomEvent: class { constructor(name, options) { this.detail = options.detail; } },
     scrollY: 0,
     matchMedia: () => motionPreference,
     addEventListener(name, listener) { listeners[name] = listener; },
@@ -190,6 +194,7 @@ test('as três cenas seguem a rolagem e os controles permanecem acessíveis', ()
   assert.equal(meters[0].style.transform, 'scaleX(1.000)');
   top = -800; listeners.scroll();
   assert.equal(tabs[2].attributes['aria-selected'], 'true');
+  assert.deepEqual(sceneChanges, [0, 1, 2]);
   assert.equal(panels[0].attributes['aria-hidden'], 'true');
   browser.scrollY = 800;
   tabs[1].listeners.click();
@@ -201,4 +206,19 @@ test('as três cenas seguem a rolagem e os controles permanecem acessíveis', ()
   assert.match(source, /prefers-reduced-motion/);
   assert.match(source, /ArrowRight/);
   assert.doesNotMatch(source, /gsap|setInterval/);
+});
+
+test('as artes cabem na moldura e cada cena aciona o Motion com fallback acessível', () => {
+  const html = readFileSync('standalone-dist/index.html', 'utf8');
+  assert.match(html, /cinestory-art-frame img\{[^}]*inset:6% 3%;width:94%;height:88%;max-width:none;max-height:none;object-fit:contain/);
+  assert.match(html, /cinestory-art-frame--elus img\{inset:8% 10%;width:80%;height:84%/);
+  const source = readFileSync('scripts/problem-motion.mjs', 'utf8');
+  const controller = readFileSync('public/brand/problem-scroll.js', 'utf8');
+  assert.match(source, /from 'motion\/mini'/);
+  assert.match(source, /reduced\.matches/);
+  assert.match(source, /elus:scenechange/);
+  assert.match(controller, /CustomEvent\('elus:scenechange'/);
+  const bundle = readFileSync('public/brand/problem-motion.js', 'utf8');
+  new VmScript(bundle);
+  assert.ok(bundle.length > 3000);
 });
