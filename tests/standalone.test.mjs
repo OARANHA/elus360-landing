@@ -114,3 +114,9 @@ test('timeline de acompanhamento conta a história e respeita movimento reduzido
   assert.match(player, /document\.hidden/);
   assert.match(player, /followup-live-glow,\.followup-flow-dot/);
 });
+
+test('HyperFrames e landing compartilham exatamente a mesma timeline', () => {
+  const live = readFileSync('public/brand/followup-motion.js', 'utf8');
+  const preview = readFileSync('motion-followup/assets/followup-motion.js', 'utf8');
+  assert.equal(preview, live);
+});
