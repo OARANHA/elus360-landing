@@ -25,6 +25,7 @@ test('export preserva a landing e o formulário comercial', () => {
   assert.match(html, /src="\/brand\/problem-motion\.js"/);
   assert.match(html, /src="\/brand\/resources-motion\.js"/);
   assert.match(html, /src="\/brand\/how-motion\.js"/);
+  assert.match(html, /src="\/brand\/agents-motion\.js"/);
   assert.doesNotMatch(html, /src="\/brand\/(?:journey-motion|followup-gsap)\.js"/);
   assert.doesNotMatch(html, /class="journey-stage"/);
   assert.doesNotMatch(html, /class="followup-stage cinema-followup"/);
@@ -78,7 +79,7 @@ test('servidor sobe, responde healthz e não aceita formulário sem origem confi
     const page = await fetch(base + '/');
     assert.equal(page.status, 200);
     const servedHtml = await page.text();
-    for (const path of ['/scrollcraft/scrollcraft.css', '/scrollcraft/scrollcraft.js', '/brand/problem-scroll.js', '/brand/problem-motion.js', '/brand/resources-motion.js', '/brand/how-motion.js']) {
+    for (const path of ['/scrollcraft/scrollcraft.css', '/scrollcraft/scrollcraft.js', '/brand/problem-scroll.js', '/brand/problem-motion.js', '/brand/resources-motion.js', '/brand/how-motion.js', '/brand/agents-motion.js']) {
       const fingerprint = createHash('sha256').update(readFileSync('public' + path)).digest('hex').slice(0, 12);
       assert.ok(servedHtml.includes(path + '?v=' + fingerprint), 'Asset sem versão: ' + path);
     }
@@ -256,4 +257,21 @@ test('Como funciona percorre sete etapas ilustradas pelo scroll', () => {
   assert.match(source, /prefers-reduced-motion: reduce/);
   assert.match(source, /requestAnimationFrame\(update\)/);
   new VmScript(readFileSync('public/brand/how-motion.js', 'utf8'));
+});
+
+test('Agentes mantém mascote e fluxo horizontal com linhas vivas e leitura acessível', () => {
+  const html = readFileSync('standalone-dist/index.html', 'utf8');
+  const section = html.match(/<section class="section agents-section" id="agentes"[\s\S]*?<\/section>/)?.[0];
+  assert.ok(section);
+  assert.match(section, /src="\/brand\/mascot-elus\.png"/);
+  assert.equal((section.match(/class="flow-card"/g) || []).length, 4);
+  assert.equal((section.match(/class="agents-wire"/g) || []).length, 3);
+  for (const title of ['Mensagem chega', 'Agente responde', 'Lead qualificado', 'Humano assume', 'Base de conhecimento', 'Supervisão humana']) assert.ok(section.includes(title));
+  assert.match(html, /@media\(max-width:760px\)\{\.agents-grid/);
+  const source = readFileSync('scripts/agents-motion.mjs', 'utf8');
+  assert.match(source, /from 'motion\/mini'/);
+  assert.match(source, /IntersectionObserver/);
+  assert.match(source, /prefers-reduced-motion: reduce/);
+  assert.match(source, /strokeDashoffset/);
+  new VmScript(readFileSync('public/brand/agents-motion.js', 'utf8'));
 });

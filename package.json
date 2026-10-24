@@ -14,7 +14,8 @@
     "lint": "eslint . --ignore-pattern dist --ignore-pattern .next",
     "db:generate": "drizzle-kit generate",
     "build:resources": "esbuild scripts/resources-motion.mjs --bundle --format=iife --minify --target=es2020 --outfile=public/brand/resources-motion.js",
-    "build:how": "esbuild scripts/how-motion.mjs --bundle --format=iife --minify --target=es2020 --outfile=public/brand/how-motion.js"
+    "build:how": "esbuild scripts/how-motion.mjs --bundle --format=iife --minify --target=es2020 --outfile=public/brand/how-motion.js",
+    "build:agents": "esbuild scripts/agents-motion.mjs --bundle --format=iife --minify --target=es2020 --outfile=public/brand/agents-motion.js"
   },
   "dependencies": {
     "@base-ui/react": "^1.7.0",
