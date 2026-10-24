@@ -14,7 +14,7 @@ test('export preserva a landing e o formulário comercial', () => {
   assert.match(html, /src="\/brand\/followup-lead\.webp"/);
   assert.match(html, /src="\/brand\/followup-actions\.webp"/);
   assert.match(html, /id="leadForm"/);
-  assert.match(html, /id="cinemaFollowupCTA"/);
+  assert.doesNotMatch(html, /id="cinemaFollowupCTA"/);
   assert.match(html, /class="followup-stage cinema-followup"[^>]*role="group"/);
   assert.match(html, /id="followupMotionToggle"/);
   assert.match(html, /class="followup-information followup-contact elus-emission"/);

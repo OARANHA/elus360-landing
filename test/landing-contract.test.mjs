@@ -53,6 +53,15 @@ test("keeps all problem artwork and accessible information with the mascot", () 
     assert.ok(problem.includes(asset), `PROBLEMA keeps ${asset}`);
   }
   assert.match(problem, /Exemplo ilustrativo/);
+  for (const removed of [
+    "Lead sem retorno",
+    "WhatsApp disperso",
+    "Follow-up esquecido",
+    "Equipe comercial e IA juntas · Conversas organizadas · Próximos passos visíveis",
+    "cinemaFollowupCTA",
+    "cinemaFollowupEmail",
+    "Quero conhecer o ELUS 360",
+  ]) assert.ok(!problem.includes(removed), `PROBLEMA omits ${removed}`);
   assert.match(problem, /conversa|lembrete|acompanhamento/i);
 });
 
