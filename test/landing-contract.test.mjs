@@ -58,6 +58,7 @@ test("keeps all problem artwork and accessible information with the mascot", () 
     "WhatsApp disperso",
     "Follow-up esquecido",
     "Equipe comercial e IA juntas · Conversas organizadas · Próximos passos visíveis",
+    "Equipe comercial e IA juntas",
     "cinemaFollowupCTA",
     "cinemaFollowupEmail",
     "Quero conhecer o ELUS 360",
