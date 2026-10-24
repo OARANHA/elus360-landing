@@ -35,9 +35,11 @@ document.querySelectorAll('.w-card').forEach((card) => {
   if (!art || reduceMotion.matches) return;
 
   card.addEventListener('pointerenter', () => {
+    if (reduceMotion.matches) return;
     animate(art, { scale: 1.035 }, { duration: 0.28, easing: 'ease-out' });
   });
   card.addEventListener('pointerleave', () => {
+    if (reduceMotion.matches) return;
     animate(art, { scale: 1 }, { duration: 0.32, easing: 'ease-out' });
   });
 });
