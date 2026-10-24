@@ -56,6 +56,12 @@
 @media(prefers-reduced-motion:reduce){#problema .followup-scene-footer button{display:none}}
 
 html,body{margin:0;width:1440px;height:600px;overflow:hidden;font-family:"Plus Jakarta Sans",system-ui,sans-serif}*{box-sizing:border-box}figure,p{margin:0}#problema{padding:0;width:100%;height:100%}#problema .cinema-followup{height:600px;border-radius:0}#problema .followup-artboard{height:600px;min-height:0;padding:34px 24px 44px}img{display:block;max-width:100%}
+
+/* Follow-up visual effects shared with the commercial landing. */
+#problema .followup-mascot-anchor{isolation:isolate}
+#problema .followup-mascot-anchor .cinema-followup-mascot,#problema .followup-mascot-anchor p{position:relative;z-index:1}
+#problema .followup-live-glow{position:absolute;left:50%;top:45%;width:85%;aspect-ratio:1;transform:translate(-50%,-50%);border-radius:50%;pointer-events:none;z-index:0;background:radial-gradient(circle,rgba(125,216,255,.33),rgba(52,157,243,.18) 35%,rgba(75,112,238,.07) 58%,transparent 72%);box-shadow:0 0 42px 8px rgba(66,174,255,.14)}
+#problema .followup-connections .followup-flow-dot{fill:#38bdf8;stroke:#fff;stroke-width:3;filter:drop-shadow(0 0 9px #31bbfb)}
 </style><div id="problema"><div id="followup-scene" class="clip" data-start="0" data-duration="10" data-track-index="0">    <div class="followup-stage cinema-followup" role="group" aria-label="Exemplo ilustrativo: o mascote ELUS apresenta o contato recebido e as ações de acompanhamento." id="followup-stage">
       <img class="cinema-followup-scene" src="assets/followup-scene.webp" width="1672" height="941" alt="" loading="eager" decoding="async">
       <div class="followup-artboard">
