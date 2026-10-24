@@ -23,6 +23,7 @@ test('export preserva a landing e o formulário comercial', () => {
   assert.match(html, /id="followupTrack"/);
   assert.match(html, /src="\/brand\/problem-scroll\.js"/);
   assert.match(html, /src="\/brand\/problem-motion\.js"/);
+  assert.match(html, /src="\/brand\/resources-motion\.js"/);
   assert.doesNotMatch(html, /src="\/brand\/(?:journey-motion|followup-gsap)\.js"/);
   assert.doesNotMatch(html, /class="journey-stage"/);
   assert.doesNotMatch(html, /class="followup-stage cinema-followup"/);
@@ -76,7 +77,7 @@ test('servidor sobe, responde healthz e não aceita formulário sem origem confi
     const page = await fetch(base + '/');
     assert.equal(page.status, 200);
     const servedHtml = await page.text();
-    for (const path of ['/scrollcraft/scrollcraft.css', '/scrollcraft/scrollcraft.js', '/brand/problem-scroll.js', '/brand/problem-motion.js']) {
+    for (const path of ['/scrollcraft/scrollcraft.css', '/scrollcraft/scrollcraft.js', '/brand/problem-scroll.js', '/brand/problem-motion.js', '/brand/resources-motion.js']) {
       const fingerprint = createHash('sha256').update(readFileSync('public' + path)).digest('hex').slice(0, 12);
       assert.ok(servedHtml.includes(path + '?v=' + fingerprint), 'Asset sem versão: ' + path);
     }
@@ -221,4 +222,20 @@ test('as artes cabem na moldura e cada cena aciona o Motion com fallback acessí
   const bundle = readFileSync('public/brand/problem-motion.js', 'utf8');
   new VmScript(bundle);
   assert.ok(bundle.length > 3000);
+});
+
+test('Recursos preserva as capacidades e usa Motion com adaptação de layout', () => {
+  const html = readFileSync('standalone-dist/index.html', 'utf8');
+  const section = html.match(/<section class="section resource-section" id="recursos"[\s\S]*?<\/section>/)?.[0];
+  assert.ok(section);
+  for (const title of ['Organizar', 'Atender', 'Evoluir', 'CRM visual', 'WhatsApp centralizado', 'Radar de leads em risco', 'Agentes de IA', 'Base de conhecimento', 'Transferência inteligente', 'Automações de follow-up', 'Registros e auditoria da IA']) {
+    assert.ok(section.includes(title), `Recurso ausente: ${title}`);
+  }
+  assert.equal((section.match(/class="resource-stage(?: resource-stage-evolve)?"/g) || []).length, 3);
+  assert.match(html, /@media\(max-width:760px\)\{\.resources-heading/);
+  const source = readFileSync('scripts/resources-motion.mjs', 'utf8');
+  assert.match(source, /from 'motion\/mini'/);
+  assert.match(source, /IntersectionObserver/);
+  assert.match(source, /prefers-reduced-motion: reduce/);
+  new VmScript(readFileSync('public/brand/resources-motion.js', 'utf8'));
 });
