@@ -131,7 +131,10 @@
 
   function syncPlayback() {
     if (timeline) {
-      if (!inView || document.hidden || manualPause || reduced.matches || manualSelection) timeline.pause();
+      // Once the story starts in view, keep its short sequence moving even if
+      // the browser temporarily hides the tab. The browser can throttle rAF;
+      // the scene itself must not remain stuck on a partially filled meter.
+      if (!inView || manualPause || reduced.matches || manualSelection) timeline.pause();
       else if (timeline.progress() < .999) timeline.play();
     }
     if (ambient) {
