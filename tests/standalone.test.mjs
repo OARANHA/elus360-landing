@@ -11,11 +11,16 @@ test('export preserva a landing e o formulário comercial', () => {
   assert.match(html, /<section\b(?=[^>]*\bid="inicio")(?=[^>]*\bclass="[^"]*\bhero\b)[^>]*>/);
   assert.doesNotMatch(html, /<div class="office-actors"/);
   assert.match(html, /id="followupStory"/);
-  assert.match(html, /class="journey-thread"/);
-  assert.match(html, /class="journey-outcome"/);
-  assert.match(html, /src="\/brand\/mascot-elus\.png"/);
-  assert.match(html, /src="\/brand\/journey-motion\.js"/);
+  assert.match(html, /class="cinestory"/);
+  assert.match(html, /id="cinestoryTab0"/);
+  assert.match(html, /aria-selected="true"/);
+  assert.match(html, /src="\/brand\/followup-scene\.webp"/);
+  assert.match(html, /src="\/brand\/followup-lead\.webp"/);
+  assert.match(html, /src="\/brand\/followup-mascot\.webp"/);
+  assert.match(html, /src="\/brand\/followup-actions\.webp"/);
   assert.match(html, /id="followupMotionToggle"/);
+  assert.match(html, /src="\/brand\/journey-motion\.js"/);
+  assert.doesNotMatch(html, /class="journey-stage"/);
   assert.doesNotMatch(html, /class="followup-stage cinema-followup"/);
   assert.doesNotMatch(html, /id="cinemaFollowupCTA"/);
   assert.match(html, /id="leadForm"/);
@@ -121,14 +126,15 @@ test('HyperFrames e landing compartilham exatamente a mesma timeline', () => {
   assert.equal(preview, live);
 });
 
-test('cena editorial preserva animação acessível com fallback estático', () => {
+test('narrativa cinematográfica acessível com tabs e movimento reduzido', () => {
   const source = readFileSync('public/brand/journey-motion.js', 'utf8');
   new VmScript(source);
   assert.match(source, /prefers-reduced-motion/);
   assert.match(source, /IntersectionObserver/);
-  assert.match(source, /document\.hidden/);
-  assert.match(source, /timeline\.restart\(\)/);
-  for (const label of ['mensagem', 'sem-retorno', 'elus', 'acompanhamento', 'retorno']) {
-    assert.ok(source.includes("'" + label + "'"), 'Etapa ausente: ' + label);
-  }
+  assert.match(source, /visibilitychange/);
+  assert.match(source, /aria-selected/);
+  assert.match(source, /ArrowRight/);
+  assert.match(source, /startSequence/);
+  assert.match(source, /timeline\.kill\(\)/);
+  assert.match(source, /followupMotionToggle/);
 });

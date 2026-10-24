@@ -1,87 +1,160 @@
-/* ELUS 360 — a single, accessible commercial follow-up sequence. */
+/* ELUS 360 — cinematic, progressive commercial journey. GSAP is local to the app. */
 (function () {
   'use strict';
   var stage = document.getElementById('followupStory');
-  var control = document.getElementById('followupMotionToggle');
-  if (!stage || !control || !window.gsap) return;
+  if (!stage) return;
 
-  var gsap = window.gsap;
-  var media = window.matchMedia('(prefers-reduced-motion: reduce)');
+  var tabs = Array.prototype.slice.call(stage.querySelectorAll('[data-story-tab]'));
+  var panels = Array.prototype.slice.call(stage.querySelectorAll('[data-scene]'));
+  var arts = Array.prototype.slice.call(stage.querySelectorAll('[data-art-scene]'));
+  var meters = tabs.map(function (tab) { return tab.querySelector('.cinestory-meter i'); });
+  var replay = document.getElementById('followupMotionToggle');
+  var replayLabel = replay && replay.querySelector('span');
+  var reduced = window.matchMedia('(prefers-reduced-motion: reduce)');
+  var gsap = window.gsap || null;
+  var index = 0;
+  var timeline = null;
+  var started = false;
   var inView = false;
   var manualPause = false;
-  var timeline = null;
-  var animated = [
-    '.journey-thread', '.journey-message', '.journey-alert',
-    '.journey-mascot', '.journey-brand', '.journey-signal',
-    '.journey-actions-overline', '.journey-step', '.journey-outcome'
-  ];
-  var elements = stage.querySelectorAll(animated.join(','));
-  var label = control.querySelector('span');
+  var manualSelection = false;
 
-  function sync() {
-    if (!timeline) return;
-    var complete = timeline.progress() >= .999;
-    if (complete || manualPause || !inView || document.hidden) timeline.pause();
-    else timeline.play();
-    label.textContent = complete ? 'Rever sequência' : manualPause ? 'Continuar sequência' : 'Pausar sequência';
-    control.setAttribute('aria-label', complete ? 'Rever sequência de acompanhamento' : manualPause ? 'Continuar sequência de acompanhamento' : 'Pausar sequência de acompanhamento');
-    control.setAttribute('aria-pressed', String(manualPause && !complete));
+  if (tabs.length !== 3 || panels.length !== 3 || arts.length !== 3 || !replay) return;
+
+  function applyScene(next, animate) {
+    if (next < 0 || next >= panels.length) return;
+    var previous = index;
+    var leaving = [panels[previous], arts[previous]];
+    var entering = [panels[next], arts[next]];
+    if (gsap) gsap.killTweensOf(leaving.concat(entering));
+    if (gsap) gsap.set(leaving.concat(entering), { clearProps: 'all' });
+    panels.forEach(function (panel, i) {
+      panel.classList.toggle('is-active', i === next);
+      panel.setAttribute('aria-hidden', String(i !== next));
+    });
+    arts.forEach(function (art, i) { art.classList.toggle('is-active', i === next); });
+    tabs.forEach(function (tab, i) {
+      tab.classList.toggle('is-active', i === next);
+      tab.setAttribute('aria-selected', String(i === next));
+      tab.tabIndex = i === next ? 0 : -1;
+    });
+    index = next;
+    if (animate && gsap && !reduced.matches) {
+      gsap.fromTo(panels[next], { opacity: 0, y: 18 }, {
+        opacity: 1, y: 0, duration: .64, ease: 'power3.out',
+        onComplete: function () { gsap.set(panels[next], {clearProps:'opacity,transform'}); }
+      });
+      gsap.fromTo(arts[next], { opacity: 0, y: 14, scale: .97 }, {
+        opacity: 1, y: 0, scale: 1, duration: .86, ease: 'power3.out',
+        onComplete: function () { gsap.set(arts[next], {clearProps:'opacity,transform'}); }
+      });
+    }
   }
 
-  function prepare() {
+  function setMeters(active) {
+    meters.forEach(function (meter, i) {
+      var progress = i < active ? 1 : 0;
+      if (gsap) gsap.set(meter, { scaleX: progress });
+      else meter.style.transform = 'scaleX(' + progress + ')';
+    });
+  }
+
+  function updateButton() {
+    replay.hidden = reduced.matches || !gsap;
+    if (replay.hidden) return;
+    var complete = manualSelection || (timeline && timeline.progress() >= .999);
+    var label = complete ? 'Rever sequência' : manualPause ? 'Continuar sequência' : 'Pausar sequência';
+    replayLabel.textContent = label;
+    replay.setAttribute('aria-label', label + ' de acompanhamento');
+    replay.setAttribute('aria-pressed', String(manualPause && !complete));
+  }
+
+  function syncPlayback() {
     if (timeline) {
-      timeline.kill();
-      timeline = null;
-      gsap.set(elements, {clearProps:'all'});
+      if (!inView || document.hidden || manualPause || reduced.matches || manualSelection) timeline.pause();
+      else if (timeline.progress() < .999) timeline.play();
     }
-    if (media.matches) {
-      control.hidden = true;
-      control.setAttribute('aria-pressed', 'false');
-      return;
-    }
-    manualPause = false;
-    timeline = gsap.timeline({paused:true, defaults:{ease:'power3.out'}, onComplete:sync});
-    timeline.addLabel('mensagem', 0);
-    timeline.from(stage.querySelector('.journey-thread'), {autoAlpha:0, y:20, duration:.85}, 'mensagem+=.1');
-    timeline.from(stage.querySelector('.journey-message'), {autoAlpha:0, x:-16, duration:.65}, 'mensagem+=.65');
-    timeline.addLabel('sem-retorno', 1.25);
-    timeline.from(stage.querySelector('.journey-alert'), {autoAlpha:0, y:8, duration:.6}, 'sem-retorno');
-    timeline.addLabel('elus', 2.05);
-    timeline.from(stage.querySelector('.journey-mascot'), {autoAlpha:0, y:20, scale:.92, duration:.95}, 'elus');
-    timeline.from(stage.querySelector('.journey-brand'), {autoAlpha:0, y:8, duration:.55}, 'elus+=.42');
-    timeline.fromTo(stage.querySelector('.journey-signal'), {x:-40, opacity:0}, {x:74, opacity:.9, duration:1.1, ease:'power2.inOut'}, 'elus+=.7');
-    timeline.to(stage.querySelector('.journey-signal'), {opacity:0, duration:.25}, 'elus+=1.75');
-    timeline.addLabel('acompanhamento', 3.15);
-    timeline.from(stage.querySelector('.journey-actions-overline'), {autoAlpha:0, y:6, duration:.45}, 'acompanhamento');
-    timeline.from(stage.querySelectorAll('.journey-step'), {autoAlpha:0, y:16, duration:.7, stagger:.23}, 'acompanhamento+=.18');
-    timeline.addLabel('retorno', 4.25);
-    timeline.from(stage.querySelector('.journey-outcome'), {autoAlpha:0, y:18, scale:.98, duration:.8, ease:'power4.out'}, 'retorno');
-    timeline.to({}, {duration:.45}, 5.15);
-    control.hidden = false;
-    sync();
+    updateButton();
   }
 
-  control.addEventListener('click', function () {
-    if (!timeline) return;
-    if (timeline.progress() >= .999) {
-      manualPause = false;
-      timeline.restart();
-    } else {
-      manualPause = !manualPause;
-    }
-    sync();
+  function startSequence() {
+    if (reduced.matches || !gsap) return;
+    if (timeline) timeline.kill();
+    started = true;
+    manualPause = false;
+    manualSelection = false;
+    applyScene(0, false);
+    setMeters(0);
+    timeline = gsap.timeline({ paused: true, onComplete: updateButton });
+    timeline.to(meters[0], { scaleX: 1, duration: 3.7, ease: 'none' });
+    timeline.call(function () { applyScene(1, true); });
+    timeline.to(meters[1], { scaleX: 1, duration: 3.8, ease: 'none' });
+    timeline.call(function () { applyScene(2, true); });
+    timeline.to(meters[2], { scaleX: 1, duration: 4.0, ease: 'none' });
+    syncPlayback();
+  }
+
+  function selectManually(next) {
+    if (timeline) { timeline.kill(); timeline = null; }
+    started = true;
+    manualSelection = true;
+    manualPause = false;
+    applyScene(next, true);
+    setMeters(next);
+    if (gsap) gsap.set(meters[next], { scaleX: 1 });
+    else meters[next].style.transform = 'scaleX(1)';
+    updateButton();
+  }
+
+  tabs.forEach(function (tab, i) {
+    tab.addEventListener('click', function () { selectManually(i); });
+    tab.addEventListener('keydown', function (event) {
+      var next;
+      if (event.key === 'ArrowRight') next = (i + 1) % tabs.length;
+      else if (event.key === 'ArrowLeft') next = (i + tabs.length - 1) % tabs.length;
+      else if (event.key === 'Home') next = 0;
+      else if (event.key === 'End') next = tabs.length - 1;
+      else return;
+      event.preventDefault();
+      tabs[next].focus();
+      selectManually(next);
+    });
   });
+
+  replay.addEventListener('click', function () {
+    if (reduced.matches || !gsap) return;
+    if (timeline && timeline.progress() < .999 && !manualSelection) {
+      manualPause = !manualPause;
+      syncPlayback();
+    } else {
+      startSequence();
+    }
+  });
+
   if ('IntersectionObserver' in window) {
     var observer = new IntersectionObserver(function (entries) {
       inView = entries[0].isIntersecting;
-      sync();
-    }, {threshold:.08, rootMargin:'0px 0px -8% 0px'});
+      if (inView && !started && !reduced.matches) startSequence();
+      syncPlayback();
+    }, { threshold: .14 });
     observer.observe(stage);
   } else {
     inView = true;
+    if (!reduced.matches) startSequence();
   }
-  document.addEventListener('visibilitychange', sync);
-  if (media.addEventListener) media.addEventListener('change', prepare);
-  else if (media.addListener) media.addListener(prepare);
-  prepare();
+
+  document.addEventListener('visibilitychange', syncPlayback);
+  function onMotionChange() {
+    if (timeline) { timeline.kill(); timeline = null; }
+    started = false;
+    manualPause = false;
+    manualSelection = false;
+    applyScene(0, false);
+    setMeters(0);
+    if (!reduced.matches && inView) startSequence();
+    updateButton();
+  }
+  if (reduced.addEventListener) reduced.addEventListener('change', onMotionChange);
+  else if (reduced.addListener) reduced.addListener(onMotionChange);
+  updateButton();
 })();
