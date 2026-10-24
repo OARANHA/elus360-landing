@@ -23,7 +23,8 @@
     width = nextWidth;
     var progress = timeline ? timeline.progress() : 0;
     if (timeline) { timeline.progress(1).kill(); }
-    stage.querySelectorAll('.elus-emission,.followup-mascot-anchor,.followup-connections path').forEach(function(el){el.removeAttribute('style');});
+    stage.querySelectorAll('.followup-live-glow,.followup-flow-dot').forEach(function(el){el.remove();});
+    stage.querySelectorAll('.elus-emission,.followup-mascot-anchor,.followup-connections path,.cinema-followup-scene').forEach(function(el){el.removeAttribute('style');});
     timeline = window.createElusFollowupTimeline(stage);
     timeline.eventCallback('onComplete',refresh);
     window.__timelines = window.__timelines || {};
