@@ -71,6 +71,12 @@ test('servidor sobe, responde healthz e não aceita formulário sem origem confi
     assert.equal((await fetch(base + '/healthz')).status, 200);
     assert.equal((await fetch(base + '/')).status, 200);
     assert.equal((await fetch(base + '/privacidade')).status, 200);
+    for (const [path, type] of [['/scrollcraft/scrollcraft.css', /text\/css/], ['/scrollcraft/scrollcraft.js', /javascript/]]) {
+      const asset = await fetch(base + path);
+      assert.equal(asset.status, 200);
+      assert.match(asset.headers.get('content-type'), type);
+      assert.ok((await asset.text()).length > 100);
+    }
     for (const file of ['followup-gsap.js','followup-motion.js','followup-player.js','journey-motion.js']) {
       const asset = await fetch(base + '/brand/' + file);
       assert.equal(asset.status, 200);

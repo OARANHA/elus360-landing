@@ -24,7 +24,7 @@
   var manualPause = false;
   var manualSelection = false;
 
-  if (tabs.length !== 3 || panels.length !== 3 || arts.length !== 3 || !replay) return;
+  if (tabs.length !== 3 || panels.length !== 3 || arts.length !== 3 || !replay || meters.some(function (meter) { return !meter; })) return;
 
   function stopAmbient() {
     if (!ambient) return;
