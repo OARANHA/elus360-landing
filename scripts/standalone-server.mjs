@@ -1,11 +1,21 @@
 import { createServer } from 'node:http';
 import { createReadStream, readFileSync, statSync } from 'node:fs';
-import { createHmac } from 'node:crypto';
+import { createHash, createHmac } from 'node:crypto';
 import { resolve } from 'node:path';
 import { pathToFileURL } from 'node:url';
 
 const root = resolve(new URL('../', import.meta.url).pathname);
-const index = readFileSync(resolve(root, 'standalone-dist/index.html'), 'utf8');
+// The CDN can retain a previous script for a day. Tie each referenced CSS/JS
+// URL to the bytes in this image so a new deployment cannot load stale code.
+const index = readFileSync(resolve(root, 'standalone-dist/index.html'), 'utf8').replace(
+  /((?:src|href)="(\/(?:brand\/[A-Za-z0-9_-]+\.js|scrollcraft\/scrollcraft\.(?:css|js))))"/g,
+  (match, attribute, path) => {
+    const fingerprint = createHash('sha256')
+      .update(readFileSync(resolve(root, 'public' + path)))
+      .digest('hex').slice(0, 12);
+    return attribute + '?v=' + fingerprint + '"';
+  },
+);
 const privacy = readFileSync(resolve(root, 'standalone-dist/privacidade.html'), 'utf8');
 const port = Number(process.env.PORT || 3000);
 const webhookUrl = process.env.ELUS_LEADS_WEBHOOK_URL || '';
