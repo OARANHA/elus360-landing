@@ -10,10 +10,15 @@
   var meters = tabs.map(function (tab) { return tab.querySelector('.cinestory-meter i'); });
   var replay = document.getElementById('followupMotionToggle');
   var replayLabel = replay && replay.querySelector('span');
+  var office = stage.querySelector('.cinestory-office');
+  var orbit = stage.querySelector('.cinestory-orbit');
   var reduced = window.matchMedia('(prefers-reduced-motion: reduce)');
   var gsap = window.gsap || null;
   var index = 0;
   var timeline = null;
+  var ambient = null;
+  var ambientTargets = [];
+  var entrances = [];
   var started = false;
   var inView = false;
   var manualPause = false;
@@ -21,11 +26,52 @@
 
   if (tabs.length !== 3 || panels.length !== 3 || arts.length !== 3 || !replay) return;
 
+  function stopAmbient() {
+    if (!ambient) return;
+    ambient.kill();
+    ambient = null;
+    if (gsap && ambientTargets.length) gsap.set(ambientTargets, { clearProps: 'transform' });
+    ambientTargets = [];
+  }
+
+  function resetOffice() {
+    if (gsap && office) gsap.set(office, { clearProps: 'transform' });
+  }
+
+  function stopEntrances() {
+    entrances.forEach(function (tween) { tween.kill(); });
+    entrances = [];
+  }
+
+  function startAmbient(sceneIndex) {
+    stopAmbient();
+    if (!gsap || reduced.matches) return;
+    var image = arts[sceneIndex].querySelector('img');
+    ambient = gsap.timeline({ paused: true, repeat: -1, yoyo: true });
+    if (sceneIndex === 0 && image) {
+      ambientTargets.push(image);
+      ambient.to(image, { y: -7, duration: 1.35, ease: 'sine.inOut' });
+    } else if (sceneIndex === 1) {
+      ambientTargets.push(arts[sceneIndex]);
+      ambient.to(arts[sceneIndex], { y: -8, duration: 1.45, ease: 'sine.inOut' });
+      if (orbit) {
+        ambientTargets.push(orbit);
+        ambient.to(orbit, { rotation: 12, duration: 6.5, ease: 'sine.inOut' }, 0);
+      }
+    } else if (image) {
+      ambientTargets.push(image);
+      ambient.to(image, { y: -4, scale: 1.018, duration: 1.55, ease: 'sine.inOut' });
+    }
+    syncPlayback();
+  }
+
   function applyScene(next, animate) {
     if (next < 0 || next >= panels.length) return;
     var previous = index;
     var leaving = [panels[previous], arts[previous]];
     var entering = [panels[next], arts[next]];
+    stopEntrances();
+    stopAmbient();
     if (gsap) gsap.killTweensOf(leaving.concat(entering));
     if (gsap) gsap.set(leaving.concat(entering), { clearProps: 'all' });
     panels.forEach(function (panel, i) {
@@ -40,14 +86,28 @@
     });
     index = next;
     if (animate && gsap && !reduced.matches) {
-      gsap.fromTo(panels[next], { opacity: 0, y: 18 }, {
-        opacity: 1, y: 0, duration: .64, ease: 'power3.out',
+      var panelEntrance = gsap.fromTo(panels[next], { opacity: 0, y: 18 }, {
+        opacity: 1, y: 0, duration: .58, ease: 'expo.out',
         onComplete: function () { gsap.set(panels[next], {clearProps:'opacity,transform'}); }
       });
-      gsap.fromTo(arts[next], { opacity: 0, y: 14, scale: .97 }, {
-        opacity: 1, y: 0, scale: 1, duration: .86, ease: 'power3.out',
-        onComplete: function () { gsap.set(arts[next], {clearProps:'opacity,transform'}); }
+      var entrance = next === 0
+        ? { x: -82, y: 14, rotation: -2.2, scale: .93, clipPath: 'inset(8% 54% 8% 0 round 20px)' }
+        : next === 1
+          ? { x: 0, y: 32, rotation: -4.5, scale: .76, clipPath: 'inset(10% 10% 10% 10% round 50%)' }
+          : { x: 88, y: -10, rotation: 2.4, scale: .92, clipPath: 'inset(4% 0 4% 56% round 20px)' };
+      var artEntrance = gsap.fromTo(arts[next], { opacity: 0, ...entrance }, {
+        opacity: 1, x: 0, y: 0, rotation: 0, scale: 1,
+        clipPath: 'inset(0% 0% 0% 0% round 20px)',
+        duration: next === 1 ? .82 : .72,
+        ease: next === 1 ? 'back.out(1.12)' : 'power4.out',
+        onComplete: function () {
+          gsap.set(arts[next], {clearProps:'opacity,transform,clipPath'});
+          startAmbient(next);
+        }
       });
+      entrances = [panelEntrance, artEntrance];
+    } else if (animate) {
+      startAmbient(next);
     }
   }
 
@@ -74,28 +134,42 @@
       if (!inView || document.hidden || manualPause || reduced.matches || manualSelection) timeline.pause();
       else if (timeline.progress() < .999) timeline.play();
     }
+    if (ambient) {
+      if (!inView || document.hidden || manualPause || reduced.matches) ambient.pause();
+      else ambient.play();
+    }
+    entrances.forEach(function (tween) {
+      if (!inView || document.hidden || manualPause || reduced.matches) tween.pause();
+      else tween.play();
+    });
     updateButton();
   }
 
   function startSequence() {
     if (reduced.matches || !gsap) return;
     if (timeline) timeline.kill();
+    resetOffice();
     started = true;
     manualPause = false;
     manualSelection = false;
     applyScene(0, false);
     setMeters(0);
     timeline = gsap.timeline({ paused: true, onComplete: updateButton });
-    timeline.to(meters[0], { scaleX: 1, duration: 3.7, ease: 'none' });
-    timeline.call(function () { applyScene(1, true); });
-    timeline.to(meters[1], { scaleX: 1, duration: 3.8, ease: 'none' });
-    timeline.call(function () { applyScene(2, true); });
-    timeline.to(meters[2], { scaleX: 1, duration: 4.0, ease: 'none' });
+    if (office) timeline.fromTo(office, { scale: 1.035, xPercent: -1.2 }, { scale: 1, xPercent: 0, duration: 7.6, ease: 'sine.inOut' }, 0);
+    applyScene(0, true);
+    timeline.to(meters[0], { scaleX: 1, duration: 2.45, ease: 'none' }, 0);
+    timeline.call(function () { applyScene(1, true); }, null, 2.45);
+    timeline.to(meters[1], { scaleX: 1, duration: 2.55, ease: 'none' }, 2.45);
+    timeline.call(function () { applyScene(2, true); }, null, 5.0);
+    timeline.to(meters[2], { scaleX: 1, duration: 2.6, ease: 'none' }, 5.0);
+    timeline.eventCallback('onComplete', function () { stopAmbient(); resetOffice(); updateButton(); });
     syncPlayback();
   }
 
   function selectManually(next) {
     if (timeline) { timeline.kill(); timeline = null; }
+    stopAmbient();
+    resetOffice();
     started = true;
     manualSelection = true;
     manualPause = false;
@@ -146,6 +220,7 @@
   document.addEventListener('visibilitychange', syncPlayback);
   function onMotionChange() {
     if (timeline) { timeline.kill(); timeline = null; }
+    resetOffice();
     started = false;
     manualPause = false;
     manualSelection = false;

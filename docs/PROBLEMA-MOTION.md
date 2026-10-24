@@ -4,19 +4,20 @@ Registro da extensão local entregue em 23/10/2026. Esta é a referência atual 
 
 ## Direção e escopo
 
-A seção mantém a identidade azul e branca, Plus Jakarta Sans e os quatro WebP originais: `followup-scene`, `followup-mascot`, `followup-lead` e `followup-actions`. Seus bytes foram preservados. O mascote é a origem visual da informação: os painéis emergem dele aos 0,7s e 1,45s, abrem espaço para leitura e permanecem no estado final. A cena ilustra acompanhamento comercial; seus exemplos não são métricas verificadas do produto.
+A seção mantém a identidade azul e branca, Plus Jakarta Sans e os quatro WebP originais: `followup-scene`, `followup-mascot`, `followup-lead` e `followup-actions`. Seus bytes foram preservados. A sequência acompanha a chegada do lead, a atuação do ELUS e o próximo passo agendado. Os cartões entram em direções distintas, o escritório faz um movimento lento de câmera e a arte ativa tem um movimento ambiente discreto. A sequência dura cerca de 7,6s e termina em repouso; as abas permitem avançar diretamente a qualquer etapa. A cena ilustra acompanhamento comercial; seus exemplos não são métricas verificadas do produto.
 
 No desktop, os painéis flanqueiam o mascote. Abaixo de 680px, a composição empilha o mascote e os painéis e oculta as conexões. A introdução, os detalhes do problema e o convite comercial acompanham o fluxo responsivo. Os três links de login apontam para `https://elus.wandora.com.br/login`.
 
 ## Fontes e reprodução
 
 - `lib/landing.ts`: seção e estilos responsivos da landing.
-- `public/brand/followup-motion.js`: timeline GSAP compartilhada, com posições calculadas a partir do mascote e dos painéis.
+- `public/brand/journey-motion.js`: sequência GSAP da landing, com entrada visível, três etapas, pausa, replay e seleção manual.
+- `public/brand/followup-motion.js`: timeline da composição HyperFrames anterior, mantida como projeto independente.
 - `public/brand/followup-player.js`: reprodução no DOM, pausa/retomada, replay e adaptação à largura.
 - `public/brand/followup-gsap.js`: dependência local.
 - `motion-followup/`: composição HyperFrames de 1440 × 600 e 10s, incluindo o estado final; imagens e scripts compartilhados por links simbólicos, fontes locais com licença OFL.
 
-A animação começa quando a seção se aproxima da viewport; pausa fora da área observada ou quando a aba fica oculta. A conclusão mantém a cena e oferece “Rever animação”, sem loop automático. `prefers-reduced-motion` mostra o estado final e oculta o controle. O HTML fornece conteúdo estático se o player não estiver disponível. A landing reproduz o DOM; nenhum vídeo foi solicitado ou renderizado.
+A animação começa quando a seção se aproxima da viewport; a sequência, as entradas e os movimentos ambiente pausam fora da área observada ou quando a aba fica oculta. A conclusão mantém a terceira cena e oferece “Rever sequência”, sem loop automático. `prefers-reduced-motion` conserva a cena inicial estática e oculta o controle. O HTML fornece conteúdo estático se o script ou GSAP não estiver disponível. A landing reproduz o DOM; nenhum vídeo foi solicitado ou renderizado.
 
 ## Verificação e limites
 
