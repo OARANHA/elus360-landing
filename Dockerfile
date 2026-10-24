@@ -5,6 +5,7 @@ COPY scripts/export-standalone.mjs scripts/export-standalone.mjs
 RUN node scripts/export-standalone.mjs
 COPY scripts/standalone-server.mjs scripts/standalone-server.mjs
 COPY public/brand public/brand
+COPY public/scrollcraft public/scrollcraft
 ENV NODE_ENV=production PORT=3000
 USER node
 EXPOSE 3000

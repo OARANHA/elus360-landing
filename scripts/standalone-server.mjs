@@ -102,15 +102,21 @@ async function handleLeads(req, res) {
 }
 
 function staticAsset(pathname, res, headOnly) {
-  const file = pathname.slice('/brand/'.length);
-  if (!/^[A-Za-z0-9_-]+\.(png|jpe?g|webp|svg|mp4|js)$/.test(file)) {
+  const isScrollcraft = pathname.startsWith('/scrollcraft/');
+  const prefix = isScrollcraft ? '/scrollcraft/' : '/brand/';
+  const directory = isScrollcraft ? 'scrollcraft' : 'brand';
+  const file = pathname.slice(prefix.length);
+  const allowed = isScrollcraft
+    ? /^scrollcraft\.(css|js)$/.test(file)
+    : /^[A-Za-z0-9_-]+\.(png|jpe?g|webp|svg|mp4|js)$/.test(file);
+  if (!allowed) {
     res.writeHead(404); return res.end();
   }
-  const target = resolve(root, 'public/brand', file);
+  const target = resolve(root, 'public', directory, file);
   try {
     const st = statSync(target);
     const ext = file.split('.').at(-1);
-    const type = { png: 'image/png', jpg: 'image/jpeg', jpeg: 'image/jpeg', webp: 'image/webp', svg: 'image/svg+xml', mp4: 'video/mp4', js: 'text/javascript; charset=utf-8' }[ext];
+    const type = { png: 'image/png', jpg: 'image/jpeg', jpeg: 'image/jpeg', webp: 'image/webp', svg: 'image/svg+xml', mp4: 'video/mp4', js: 'text/javascript; charset=utf-8', css: 'text/css; charset=utf-8' }[ext];
     res.writeHead(200, { 'content-type': type, 'content-length': st.size, 'cache-control': 'public, max-age=86400', 'x-content-type-options': 'nosniff' });
     if (headOnly) return res.end();
     return createReadStream(target).pipe(res);
@@ -134,7 +140,7 @@ export function makeServer() {
     if (path === '/favicon.ico') {
       res.writeHead(302, { location: '/brand/elus-vertical.png' }); return res.end();
     }
-    if (path.startsWith('/brand/')) return staticAsset(path, res, headOnly);
+    if (path.startsWith('/brand/') || path.startsWith('/scrollcraft/')) return staticAsset(path, res, headOnly);
     if (path === '/' || path === '/privacidade' || path === '/privacidade/') {
       const html = path === '/' ? index.replace('</body>', chatHtml() + '</body>') : privacy;
       res.writeHead(200, { 'content-type': 'text/html; charset=utf-8', 'cache-control': 'no-store', 'x-content-type-options': 'nosniff' });
