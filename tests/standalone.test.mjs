@@ -33,6 +33,22 @@ test('export preserva a landing e o formulário comercial', () => {
   assert.match(html, /id="leadForm"/);
 });
 
+test('cada cartão de Para quem é contém sua própria arte e ícone', () => {
+  const html = readFileSync('standalone-dist/index.html', 'utf8');
+  const start = html.indexOf('id="para-quem"');
+  const end = html.indexOf('</section>', start);
+  assert.ok(start >= 0 && end > start, 'Seção Para quem é ausente ou incompleta');
+  const section = html.slice(start, end);
+  const cards = [...section.matchAll(/<article class="w-card[^>]*>[\s\S]*?<\/article>/g)].map(([card]) => card);
+  assert.equal(cards.length, 6, 'A seção deve manter os seis segmentos');
+  for (const card of cards) {
+    assert.equal((card.match(/<div class="w-card-art"/g) || []).length, 1);
+    assert.equal((card.match(/<\/div>/g) || []).length, 1);
+    assert.match(card, /<span class="w-ic">[\s\S]*?<\/span><\/div>\s*<h3>/);
+    assert.match(card, /<img class="w-sector-art" src="\/brand\/audience-[a-z-]+\.webp"/);
+  }
+});
+
 
 test('os seis arquivos WebP existem no build e têm assinatura válida', () => {
   const files = [
