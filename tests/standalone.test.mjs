@@ -1,4 +1,5 @@
 import test from 'node:test';
+import { Script as VmScript, runInNewContext } from 'node:vm';
 import assert from 'node:assert/strict';
 import { readFileSync, existsSync, statSync } from 'node:fs';
 import { validateLead, validWebhookUrl, signature, makeServer } from '../scripts/standalone-server.mjs';
@@ -74,4 +75,42 @@ test('servidor sobe, responde healthz e não aceita formulário sem origem confi
     const result = await fetch(base + '/api/leads', { method:'POST', headers: {'content-type':'application/json'}, body: JSON.stringify({ nome:'Ana Silva', empresa:'Testes',email:'ana@example.com',telefone:'(51) 99999-1111', consent:true }) });
     assert.equal(result.status, 503);
   } finally { await new Promise(resolve => server.close(resolve)); }
+});
+
+test('timeline de acompanhamento conta a história e respeita movimento reduzido', () => {
+  const Script = VmScript;
+  const motion = readFileSync('public/brand/followup-motion.js', 'utf8');
+  const player = readFileSync('public/brand/followup-player.js', 'utf8');
+  new Script(motion);
+  new Script(player);
+  const steps = [];
+  const fakeTimeline = {
+    addLabel(name) { steps.push(name); return this; },
+    from() { return this; },
+    fromTo() { return this; },
+    to() { return this; }
+  };
+  const makeNode = () => ({ style: {}, setAttribute() {}, insertBefore(node) { this.glow = node; } });
+  const path = { getTotalLength() { return 10; }, getPointAtLength() { return { x: 5, y: 5 }; } };
+  const svg = makeNode();
+  svg.querySelectorAll = () => [path, path];
+  svg.appendChild = () => {};
+  const anchor = makeNode();
+  const nodes = {
+    '.followup-contact': makeNode(),
+    '.followup-mascot-anchor': anchor,
+    '.followup-resolution': makeNode(),
+    '.cinema-followup-scene': makeNode(),
+    '.followup-connections': svg
+  };
+  const context = { window: { gsap: { timeline() { return fakeTimeline; } } },
+    document: { createElement: makeNode, createElementNS: makeNode } };
+  runInNewContext(motion, context);
+  assert.equal(context.window.createElusFollowupTimeline({ querySelector: s => nodes[s] }), fakeTimeline);
+  assert.deepEqual(steps, ['lead', 'interruption', 'elus', 'followup']);
+  assert.equal(anchor.glow.className, 'followup-live-glow');
+  assert.match(player, /prefers-reduced-motion/);
+  assert.match(player, /timeline\.restart\(\)/);
+  assert.match(player, /document\.hidden/);
+  assert.match(player, /followup-live-glow,\.followup-flow-dot/);
 });
