@@ -49,8 +49,15 @@ test('cada cartão de Para quem é contém sua própria arte e ícone', () => {
   }
 });
 
+test('a ilustração de Diferenciais usa proporção quadrada e arquivo próprio', () => {
+  const html = readFileSync('standalone-dist/index.html', 'utf8');
+  assert.match(html, /<img src="\/brand\/differential-flow\.webp"/);
+  assert.match(html, /\.differential-art img\{[^}]*height:auto;aspect-ratio:1;/);
+  assert.ok(existsSync('public/brand/differential-flow.webp'));
+});
 
-test('os seis arquivos WebP existem no build e têm assinatura válida', () => {
+
+test('os arquivos WebP do site existem e têm assinatura válida', () => {
   const files = [
     'hero-office.webp',
     'hero-team.webp',
@@ -58,6 +65,13 @@ test('os seis arquivos WebP existem no build e têm assinatura válida', () => {
     'followup-mascot.webp',
     'followup-lead.webp',
     'followup-actions.webp',
+    'differential-flow.webp',
+    'audience-clinic.webp',
+    'audience-ecommerce.webp',
+    'audience-real-estate.webp',
+    'audience-services.webp',
+    'audience-agency.webp',
+    'audience-consulting.webp',
   ];
   for (const file of files) {
     const path = 'public/brand/' + file;
