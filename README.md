@@ -8,9 +8,9 @@ Landing page responsiva para apresentar o ELUS360 e captar novos clientes.
 
 ## Implementação atual da landing
 
-A revisão local adota capítulos editoriais, com leitura vertical de cima para baixo e abertura tipográfica sem mídia. Preserva a identidade azul-gelo, o destaque violeta, Plus Jakarta Sans, logos e mascotes. A direção e o briefing estão registrados em [`scrollcraft/FINGERPRINTS.md`](scrollcraft/FINGERPRINTS.md) e [`scrollcraft/builds/elus360/BRIEF.md`](scrollcraft/builds/elus360/BRIEF.md).
+A abertura tipográfica editorial atual é preservada sem alterações. A navegação clássica ELUS em azul-meia-noite fica sticky no topo; uma barra fina acompanha o avanço da rolagem até o fim da página. A leitura mantém a identidade azul-gelo, o destaque violeta, Plus Jakarta Sans, logos e mascotes. A direção e o briefing estão registrados em [`scrollcraft/FINGERPRINTS.md`](scrollcraft/FINGERPRINTS.md) e [`scrollcraft/builds/elus360/BRIEF.md`](scrollcraft/builds/elus360/BRIEF.md).
 
-A sequência existente permanece: início → problema → produto → como funciona → recursos → agentes → diferenciais → para quem → CTA comercial → preços → FAQ → fechamento. O formulário ocupa o CTA comercial; o último capítulo encerra a leitura com um convite contextual. Um fólio de capítulo em fluxo normal substitui a barra fixa, indica o capítulo atual e oferece índice recolhível. Os links “Entrar” usam `/login` na aplicação ELUS.
+A sequência existente permanece: início → problema → produto → como funciona → recursos → agentes → diferenciais → para quem → CTA comercial → preços → FAQ → fechamento. O formulário ocupa o CTA comercial; o último capítulo encerra a leitura com um convite contextual. O menu clássico oferece links para Produto, Como funciona, Agentes de IA, Preços e FAQ, além de Entrar e Solicitar demonstração. Recursos apresenta CRM, canais, agentes, automações e auditoria em três etapas conectadas: organizar, atender e evoluir. Os links “Entrar” usam `/login` na aplicação ELUS.
 
 Os quatro artworks de PROBLEMA foram preservados, com informações do mascote também legíveis em texto. O ritmo usa revelações selecionadas de títulos, listas escalonadas e paralaxe discreta nessa arte. A página não usa capítulos fixados, vídeo controlado pela rolagem, magnetismo ou deriva contínua de fundo.
 
@@ -25,7 +25,7 @@ Permanecem no projeto:
 - Política de privacidade em `/privacidade`.
 - Projetos editáveis HyperFrames em `motion-office/`, `motion-followup/` e `motion-hero/`.
 
-O build e os testes de contrato passaram para esta revisão. Não há capturas de tela desta versão: o navegador local não conseguiu executar. Portanto, responsividade, acabamento visual e comportamento assistivo ainda não têm validação em navegador; os testes não substituem essa revisão. A alteração está no código local, sem publicação ou merge confirmados. Registros anteriores de hero e movimento não constituem aprovação visual deste redesign.
+O build e os testes de contrato passaram para esta revisão. O navegador CUA não conseguiu acessar a prévia local (`ERR_CONNECTION_REFUSED`), então a revisão visual local ainda está pendente. O resultado precisa ser conferido em desktop, celular e movimento reduzido após publicação; os testes estáticos não substituem essa revisão.
 
 ## Executar
 

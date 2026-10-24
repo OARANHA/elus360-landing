@@ -188,7 +188,7 @@ Campos têm borda clara, ícones à esquerda e placeholder com contraste reforç
 
 ### Navigation
 
-Barra fixa de 76px, logo horizontal oficial com altura automática e marcador 360, links claros de peso 600 e ciano no hover. O logo tem largura de 148px, 124px em 1100px e 134px em 640px. Menu móvel azul escuro se abre abaixo da barra e acompanha `aria-expanded`. O login continua como ação textual. O controle móvel tem área de 46px.
+Barra sticky de 76px, logo horizontal oficial com altura automática e marcador 360, links claros de peso 600 e ciano no hover. A revisão atual usa o logo com 134px e os destinos Produto, Como funciona, Agentes de IA, Preços e FAQ, além de Entrar e Solicitar demonstração. O menu móvel azul escuro se abre abaixo da barra e acompanha `aria-expanded`; o controle móvel tem área de 46px. Uma barra superior fina acompanha o progresso de rolagem e some com movimento reduzido.
 
 ### Marca e filme do hero
 

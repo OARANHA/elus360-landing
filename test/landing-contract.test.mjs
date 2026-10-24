@@ -28,16 +28,27 @@ test("preserves the current landing section order", () => {
   ]);
 });
 
-test("uses an editorial folio and a media-free title page", () => {
-  assert.match(html, /<nav\b[^>]*class="[^"]*chapter-folio/);
+test("keeps the current title page and uses the classic navigation", () => {
   const titlePage = sectionMarkup("inicio");
   assert.match(titlePage, /data-sc-chapter="inicio"/);
   assert.doesNotMatch(titlePage, /<(?:img|video|picture|canvas)\b/i);
-  assert.doesNotMatch(html, /class="navbar"/);
-  assert.match(html, /aria-live="polite"[^>]*id="folioCurrent"|id="folioCurrent"[^>]*aria-live="polite"/);
-  const folio = html.match(/<nav\b[^>]*class="[^"]*chapter-folio[^"]*"[\s\S]*?<\/nav>/)?.[0] ?? "";
-  for (const id of sectionIds) assert.ok(folio.includes(`href="#${id}"`), `folio links to #${id}`);
-  assert.doesNotMatch(folio, /—/, "chapter folio uses slash punctuation");
+  assert.match(titlePage, /A experiência do seu time vira/);
+  assert.ok(/<header\b[^>]*class="navbar"/.test(html), "classic fixed navbar exists");
+  assert.ok(!/class="chapter-folio/.test(html), "chapter folio is removed");
+  const nav = html.match(/<nav\b[^>]*class="nav-links"[\s\S]*?<\/nav>/)?.[0] ?? "";
+  for (const [label, id] of [["Produto", "produto"], ["Como funciona", "como-funciona"], ["Agentes de IA", "agentes"], ["Preços", "precos"], ["FAQ", "faq"]]) {
+    assert.match(nav, new RegExp(`href="#${id}"[^>]*>${label}`));
+  }
+  assert.match(html, /id="burger"[^>]*aria-expanded="false"[^>]*aria-controls="mobileMenu"/);
+  assert.match(html, /id="mobileMenu"/);
+  assert.match(html, /setMenuOpen\(false\)/, "mobile navigation has an explicit close path");
+  const styles = html.slice(html.indexOf("<style>") + 7, html.indexOf("</style>"));
+  const desktopCta = styles.lastIndexOf(".nav-cta{display:flex");
+  const mobileCta = styles.lastIndexOf(".nav-cta{display:none");
+  assert.ok(mobileCta > desktopCta, "mobile CTA visibility overrides the later desktop navbar styling");
+  const mobileMenuRule = styles.slice(styles.lastIndexOf(".mobile-menu{"));
+  assert.match(mobileMenuRule, /max-height:calc\(100dvh - 76px\)/);
+  assert.match(mobileMenuRule, /overflow-y:auto/);
   assert.match(titlePage, /href="https:\/\/elus\.wandora\.com\.br\/login"[^>]*>Entrar/);
 });
 
@@ -62,8 +73,24 @@ test("keeps all problem artwork and accessible information with the mascot", () 
     "cinemaFollowupCTA",
     "cinemaFollowupEmail",
     "Quero conhecer o ELUS 360",
-  ]) assert.ok(!problem.includes(removed), `PROBLEMA omits ${removed}`);
+  ]) assert.ok(!html.includes(removed), `landing omits ${removed}`);
   assert.match(problem, /conversa|lembrete|acompanhamento/i);
+});
+
+test("presents Recursos as a connected three-stage flow instead of a card grid", () => {
+  const resources = sectionMarkup("recursos");
+  for (const title of ["Organizar", "Atender", "Evoluir"]) assert.ok(resources.includes(title), `resources has the ${title} stage`);
+  for (const capability of [
+    "CRM visual",
+    "WhatsApp centralizado",
+    "Radar de leads em risco",
+    "Agentes de IA",
+    "Base de conhecimento",
+    "Transferência inteligente",
+    "Automações de follow-up",
+    "Registros e auditoria da IA",
+  ]) assert.ok(resources.includes(capability), `resources keeps ${capability}`);
+  assert.doesNotMatch(resources, /class="features-grid"/);
 });
 
 test("every Entrar link goes directly to the ELUS login page", () => {
@@ -98,8 +125,20 @@ test("keeps the lead form wired in the commercial chapter and honors the scroll 
   assert.ok(commercial.includes('id="leadForm"'), "lead form remains in the commercial chapter");
   assert.ok(commercial.includes('id="contato"'), "contact anchor remains stable");
   assert.ok(html.includes("fetch('/api/leads'"), "lead submission endpoint remains wired");
-  assert.ok(html.includes("scroll-padding-top:24px"), "in-flow navigation does not leave a fixed-header gap");
+  assert.ok(html.includes("scroll-padding-top:92px"), "anchor navigation leaves room for the sticky menu");
   assert.ok(html.includes("@media(prefers-reduced-motion:reduce)"), "reduced motion is respected");
   assert.ok(html.includes("html:not(.js) .reveal{opacity:1!important"), "legacy reveals stay visible without JavaScript");
   assert.doesNotMatch(html, /data-sc-act="(?:pin|scrub)"/);
+});
+
+test("shows page-wide scroll progress without hiding content from reduced-motion or no-JS visitors", () => {
+  assert.ok(/id="pageProgress"[^>]*aria-hidden="true"/.test(html), "page progress is decorative and exposed only visually");
+  assert.ok(html.includes("pageProgressBar"), "page progress fill exists");
+  assert.ok(html.includes("scrollHeight"), "progress uses the full document scroll range");
+  assert.ok(/\.page-progress span\{[^}]*transform:scaleX\(0\)/.test(html), "progress starts from zero width");
+  assert.ok(/progress\.style\.transform='scaleX\('\+ratio\+'\)'/.test(html), "scroll position updates the progress fill");
+  assert.ok(html.includes("reduced.addEventListener('change',scheduleProgress)"), "changing the motion preference recalculates progress");
+  assert.ok(!html.includes("progress.parentElement.style.display"), "reduced-motion visibility is not stuck in an inline style");
+  assert.ok(/prefers-reduced-motion:reduce/.test(html), "reduced-motion handling remains");
+  assert.ok(/html:not\(\.js\)[^{]*\.reveal\{opacity:1!important/.test(html), "revealed content remains visible without JavaScript");
 });
