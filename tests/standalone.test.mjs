@@ -7,7 +7,7 @@ test('export preserva a landing e o formulário comercial', () => {
   const html = readFileSync('standalone-dist/index.html', 'utf8');
   assert.match(html, /id="leadForm"/);
   assert.match(html, /https:\/\/elus\.wandora\.com\.br\/login/);
-  assert.match(html, /class="editorial-title-page"/);
+  assert.match(html, /<section\b(?=[^>]*\bid="inicio")(?=[^>]*\bclass="[^"]*\bhero\b)[^>]*>/);
   assert.doesNotMatch(html, /<div class="office-actors"/);
   assert.match(html, /src="\/brand\/followup-scene\.webp"/);
   assert.match(html, /src="\/brand\/followup-mascot\.webp"/);
