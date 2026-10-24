@@ -141,6 +141,7 @@ test('narrativa cinematográfica acessível com tabs e movimento reduzido', () =
   assert.match(source, /aria-selected/);
   assert.match(source, /ArrowRight/);
   assert.match(source, /startSequence/);
+  assert.match(source, /if \(!inView \|\| manualPause \|\| reduced\.matches \|\| manualSelection\) timeline\.pause\(\)/);
   assert.match(source, /timeline\.kill\(\)/);
   assert.match(source, /followupMotionToggle/);
 });
