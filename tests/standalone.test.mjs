@@ -20,7 +20,9 @@ test('export preserva a landing e o formulário comercial', () => {
   assert.match(html, /src="\/brand\/followup-mascot\.webp"/);
   assert.match(html, /src="\/brand\/followup-actions\.webp"/);
   assert.match(html, /id="followupMotionToggle"/);
-  assert.match(html, /src="\/brand\/journey-motion\.js"/);
+  assert.match(html, /id="followupTrack"/);
+  assert.match(html, /src="\/brand\/problem-scroll\.js"/);
+  assert.doesNotMatch(html, /src="\/brand\/(?:journey-motion|followup-gsap)\.js"/);
   assert.doesNotMatch(html, /class="journey-stage"/);
   assert.doesNotMatch(html, /class="followup-stage cinema-followup"/);
   assert.doesNotMatch(html, /id="cinemaFollowupCTA"/);
@@ -73,7 +75,7 @@ test('servidor sobe, responde healthz e não aceita formulário sem origem confi
     const page = await fetch(base + '/');
     assert.equal(page.status, 200);
     const servedHtml = await page.text();
-    for (const path of ['/scrollcraft/scrollcraft.css', '/scrollcraft/scrollcraft.js', '/brand/followup-gsap.js', '/brand/journey-motion.js']) {
+    for (const path of ['/scrollcraft/scrollcraft.css', '/scrollcraft/scrollcraft.js', '/brand/problem-scroll.js']) {
       const fingerprint = createHash('sha256').update(readFileSync('public' + path)).digest('hex').slice(0, 12);
       assert.ok(servedHtml.includes(path + '?v=' + fingerprint), 'Asset sem versão: ' + path);
     }
@@ -139,16 +141,64 @@ test('HyperFrames e landing compartilham exatamente a mesma timeline', () => {
   assert.equal(preview, live);
 });
 
-test('narrativa cinematográfica acessível com tabs e movimento reduzido', () => {
-  const source = readFileSync('public/brand/journey-motion.js', 'utf8');
+test('as três cenas seguem a rolagem e os controles permanecem acessíveis', () => {
+  const source = readFileSync('public/brand/problem-scroll.js', 'utf8');
   new VmScript(source);
+  const makeNode = () => {
+    const attributes = {};
+    const listeners = {};
+    return {
+      attributes, listeners, style: { transform: '', setProperty() {} },
+      classList: { add() {}, toggle() {} },
+      setAttribute(key, value) { attributes[key] = value; },
+      addEventListener(key, listener) { listeners[key] = listener; },
+      focus() { this.focused = true; }
+    };
+  };
+  const meters = Array.from({ length: 3 }, makeNode);
+  const tabs = Array.from({ length: 3 }, (_, i) => {
+    const tab = makeNode();
+    tab.querySelector = () => meters[i];
+    return tab;
+  });
+  const panels = Array.from({ length: 3 }, makeNode);
+  const arts = Array.from({ length: 3 }, makeNode);
+  const stage = makeNode();
+  stage.offsetHeight = 600;
+  stage.querySelectorAll = selector => ({ '[data-story-tab]': tabs, '[data-scene]': panels, '[data-art-scene]': arts })[selector];
+  const track = makeNode();
+  track.offsetHeight = 1400;
+  let top = 0;
+  track.getBoundingClientRect = () => ({ top });
+  const replay = makeNode();
+  replay.querySelector = () => ({ textContent: '' });
+  const listeners = {};
+  const motionPreference = { matches: false };
+  const browser = {
+    scrollY: 0,
+    matchMedia: () => motionPreference,
+    addEventListener(name, listener) { listeners[name] = listener; },
+    requestAnimationFrame(callback) { callback(); },
+    scrollTo(options) { this.scrollTarget = options; }
+  };
+  runInNewContext(source, { window: browser, document: { getElementById(id) {
+    return ({ followupTrack: track, followupStory: stage, followupMotionToggle: replay })[id];
+  } } });
+  assert.equal(tabs[0].attributes['aria-selected'], 'true');
+  top = -400; listeners.scroll();
+  assert.equal(tabs[1].attributes['aria-selected'], 'true');
+  assert.equal(meters[0].style.transform, 'scaleX(1.000)');
+  top = -800; listeners.scroll();
+  assert.equal(tabs[2].attributes['aria-selected'], 'true');
+  assert.equal(panels[0].attributes['aria-hidden'], 'true');
+  browser.scrollY = 800;
+  tabs[1].listeners.click();
+  assert.equal(browser.scrollTarget.top, 400);
+  motionPreference.matches = true;
+  tabs[2].listeners.keydown({ key: 'Home', preventDefault() {} });
+  assert.equal(tabs[0].focused, true);
+  assert.equal(browser.scrollTarget.behavior, 'instant');
   assert.match(source, /prefers-reduced-motion/);
-  assert.match(source, /IntersectionObserver/);
-  assert.match(source, /visibilitychange/);
-  assert.match(source, /aria-selected/);
   assert.match(source, /ArrowRight/);
-  assert.match(source, /startSequence/);
-  assert.match(source, /if \(!inView \|\| manualPause \|\| reduced\.matches \|\| manualSelection\) timeline\.pause\(\)/);
-  assert.match(source, /timeline\.kill\(\)/);
-  assert.match(source, /followupMotionToggle/);
+  assert.doesNotMatch(source, /gsap|setInterval/);
 });
