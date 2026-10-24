@@ -10,15 +10,15 @@ test('export preserva a landing e o formulário comercial', () => {
   assert.match(html, /https:\/\/elus\.wandora\.com\.br\/login/);
   assert.match(html, /<section\b(?=[^>]*\bid="inicio")(?=[^>]*\bclass="[^"]*\bhero\b)[^>]*>/);
   assert.doesNotMatch(html, /<div class="office-actors"/);
-  assert.match(html, /src="\/brand\/followup-scene\.webp"/);
-  assert.match(html, /src="\/brand\/followup-mascot\.webp"/);
-  assert.match(html, /src="\/brand\/followup-lead\.webp"/);
-  assert.match(html, /src="\/brand\/followup-actions\.webp"/);
-  assert.match(html, /id="leadForm"/);
-  assert.doesNotMatch(html, /id="cinemaFollowupCTA"/);
-  assert.match(html, /class="followup-stage cinema-followup"[^>]*role="group"/);
+  assert.match(html, /id="followupStory"/);
+  assert.match(html, /class="journey-thread"/);
+  assert.match(html, /class="journey-outcome"/);
+  assert.match(html, /src="\/brand\/mascot-elus\.png"/);
+  assert.match(html, /src="\/brand\/journey-motion\.js"/);
   assert.match(html, /id="followupMotionToggle"/);
-  assert.match(html, /class="followup-information followup-contact elus-emission"/);
+  assert.doesNotMatch(html, /class="followup-stage cinema-followup"/);
+  assert.doesNotMatch(html, /id="cinemaFollowupCTA"/);
+  assert.match(html, /id="leadForm"/);
 });
 
 
@@ -66,7 +66,7 @@ test('servidor sobe, responde healthz e não aceita formulário sem origem confi
     assert.equal((await fetch(base + '/healthz')).status, 200);
     assert.equal((await fetch(base + '/')).status, 200);
     assert.equal((await fetch(base + '/privacidade')).status, 200);
-    for (const file of ['followup-gsap.js','followup-motion.js','followup-player.js']) {
+    for (const file of ['followup-gsap.js','followup-motion.js','followup-player.js','journey-motion.js']) {
       const asset = await fetch(base + '/brand/' + file);
       assert.equal(asset.status, 200);
       assert.match(asset.headers.get('content-type'), /javascript/);
@@ -119,4 +119,16 @@ test('HyperFrames e landing compartilham exatamente a mesma timeline', () => {
   const live = readFileSync('public/brand/followup-motion.js', 'utf8');
   const preview = readFileSync('motion-followup/assets/followup-motion.js', 'utf8');
   assert.equal(preview, live);
+});
+
+test('cena editorial preserva animação acessível com fallback estático', () => {
+  const source = readFileSync('public/brand/journey-motion.js', 'utf8');
+  new VmScript(source);
+  assert.match(source, /prefers-reduced-motion/);
+  assert.match(source, /IntersectionObserver/);
+  assert.match(source, /document\.hidden/);
+  assert.match(source, /timeline\.restart\(\)/);
+  for (const label of ['mensagem', 'sem-retorno', 'elus', 'acompanhamento', 'retorno']) {
+    assert.ok(source.includes("'" + label + "'"), 'Etapa ausente: ' + label);
+  }
 });
