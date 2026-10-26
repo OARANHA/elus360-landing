@@ -11,18 +11,18 @@ test('export preserva a landing e o formulário comercial', () => {
   assert.match(html, /https:\/\/elus\.wandora\.com\.br\/login/);
   assert.match(html, /<section\b(?=[^>]*\bid="inicio")(?=[^>]*\bclass="[^"]*\bhero\b)[^>]*>/);
   assert.doesNotMatch(html, /<div class="office-actors"/);
-  assert.match(html, /id="followupStory"/);
-  assert.match(html, /class="cinestory"/);
-  assert.match(html, /id="cinestoryTab0"/);
-  assert.match(html, /aria-selected="true"/);
-  assert.match(html, /src="\/brand\/followup-scene\.webp"/);
-  assert.match(html, /src="\/brand\/followup-lead\.webp"/);
-  assert.match(html, /src="\/brand\/followup-mascot\.webp"/);
-  assert.match(html, /src="\/brand\/followup-actions\.webp"/);
-  assert.match(html, /id="followupMotionToggle"/);
-  assert.match(html, /id="followupTrack"/);
-  assert.match(html, /src="\/brand\/problem-scroll\.js"/);
-  assert.match(html, /src="\/brand\/problem-motion\.js"/);
+  assert.match(html, /id="problema"/);
+  assert.match(html, /data-problem-step="0"/);
+  assert.match(html, /data-problem-step="1"/);
+  assert.match(html, /data-problem-step="2"/);
+  assert.match(html, /data-state="início"/);
+  assert.match(html, /state==='ativo'/);
+  assert.match(html, /state==='concluído'/);
+  assert.match(html, /src="\/brand\/problem-stage-inquiry\.webp"/);
+  assert.match(html, /src="\/brand\/problem-stage-context\.webp"/);
+  assert.match(html, /src="\/brand\/problem-stage-next-step\.webp"/);
+  assert.match(html, /prefers-reduced-motion:reduce/);
+  assert.doesNotMatch(html, /id="followupStory"/);
   assert.match(html, /src="\/brand\/resources-motion\.js"/);
   assert.match(html, /src="\/brand\/how-motion\.js"/);
   assert.match(html, /src="\/brand\/agents-motion\.js"/);
@@ -109,7 +109,7 @@ test('servidor sobe, responde healthz e não aceita formulário sem origem confi
     const page = await fetch(base + '/');
     assert.equal(page.status, 200);
     const servedHtml = await page.text();
-    for (const path of ['/scrollcraft/scrollcraft.css', '/scrollcraft/scrollcraft.js', '/brand/problem-scroll.js', '/brand/problem-motion.js', '/brand/resources-motion.js', '/brand/how-motion.js', '/brand/agents-motion.js']) {
+    for (const path of ['/scrollcraft/scrollcraft.css', '/scrollcraft/scrollcraft.js', '/brand/resources-motion.js', '/brand/how-motion.js', '/brand/agents-motion.js']) {
       const fingerprint = createHash('sha256').update(readFileSync('public' + path)).digest('hex').slice(0, 12);
       assert.ok(servedHtml.includes(path + '?v=' + fingerprint), 'Asset sem versão: ' + path);
     }
