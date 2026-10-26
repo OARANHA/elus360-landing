@@ -21,6 +21,9 @@ test('export preserva a landing e o formulário comercial', () => {
   assert.match(html, /src="\/brand\/problem-stage-inquiry\.webp"/);
   assert.match(html, /src="\/brand\/problem-stage-context\.webp"/);
   assert.match(html, /src="\/brand\/problem-stage-next-step\.webp"/);
+  assert.match(html, /src="\/brand\/followup-lead\.webp"/);
+  assert.match(html, /src="\/brand\/followup-mascot\.webp"/);
+  assert.match(html, /src="\/brand\/followup-actions\.webp"/);
   assert.match(html, /prefers-reduced-motion:reduce/);
   assert.doesNotMatch(html, /id="followupStory"/);
   assert.match(html, /src="\/brand\/resources-motion\.js"/);
@@ -31,6 +34,104 @@ test('export preserva a landing e o formulário comercial', () => {
   assert.doesNotMatch(html, /class="followup-stage cinema-followup"/);
   assert.doesNotMatch(html, /id="cinemaFollowupCTA"/);
   assert.match(html, /id="leadForm"/);
+});
+
+test('a narrativa de problema usa três imagens compactas sem markup antigo sobrando', () => {
+  const html = readFileSync('standalone-dist/index.html', 'utf8');
+  const section = html.match(/<section\b(?=[^>]*\bid="problema")(?=[^>]*\bclass="[^"]*\bproblem-story-section\b)[^>]*>[\s\S]*?<\/section>/)?.[0];
+  assert.ok(section, 'Seção Problema ausente ou sem fechamento');
+  assert.equal((section.match(/<li class="problem-step/g) || []).length, 3);
+  assert.equal((section.match(/<figure class="problem-step-visual"/g) || []).length, 3);
+  assert.equal((section.match(/class="problem-step-photo"/g) || []).length, 3);
+  assert.equal((section.match(/class="problem-step-art(?: problem-step-art--mascot)?"/g) || []).length, 3);
+  assert.match(html, /\.problem-step-visual\{[^}]*aspect-ratio:9\/16/);
+  assert.match(html, /@media\(prefers-reduced-motion:reduce\)\{\.problem-step/);
+  assert.match(section, /aria-label="Narrativa em três etapas; todos os textos permanecem visíveis"/);
+  assert.match(section, /As cenas e telas são ilustrativas e fictícias/);
+  assert.doesNotMatch(section, /cinestory|data-story-tab|followupMotionToggle|aria-hidden="true"[^>]*>[^<]*(?:O interesse|As pontas|próximo passo)/i);
+  assert.doesNotMatch(html.slice(html.indexOf('id="problema"'), html.indexOf('id="agentes"')), /id="cinestoryPanel|class="cinestory-art|class="cinestory-footer/);
+  assert.match(html, /window\.addEventListener\('resize',schedulePositionUpdate\)/);
+  assert.match(html, /window\.addEventListener\('scroll',schedulePositionUpdate/);
+});
+
+test('a etapa ativa acompanha a rolagem para cima, para baixo, redimensionamento e movimento reduzido', () => {
+  const html = readFileSync('standalone-dist/index.html', 'utf8');
+  const script = html.match(/<script>\s*\(function\(\)\{\s*var root=document\.getElementById\('problemStory'[\s\S]*?\}\)\(\);\s*<\/script>/)?.[0];
+  assert.ok(script, 'Controlador de rolagem da narrativa ausente');
+  const listeners = {};
+  let pendingFrame;
+  const stateLabels = [];
+  const stepRects = [
+    { top: 0, bottom: 560 },
+    { top: 580, bottom: 1140 },
+    { top: 1160, bottom: 1720 },
+  ];
+  const stateNodes = [0, 1, 2].map((i) => ({ set textContent(value) { stateLabels[i] = value; } }));
+  const steps = [0, 1, 2].map((i) => ({
+    dataset: {},
+    attributes: {},
+    classList: { toggle() {} },
+    getAttribute(name) { return name === 'data-problem-step' ? String(i) : null; },
+    getBoundingClientRect() { return stepRects[i]; },
+    querySelector() { return stateNodes[i]; },
+    setAttribute(name, value) { this.attributes[name] = value; },
+    removeAttribute(name) { delete this.attributes[name]; },
+    scrollIntoView(options) { this.lastScroll = options; },
+  }));
+  const buttons = [0, 1, 2].map((i) => ({
+    attributes: {},
+    addEventListener(name, callback) { this.listeners ||= {}; this.listeners[name] = callback; },
+    setAttribute(name, value) { this.attributes[name] = value; },
+    removeAttribute(name) { delete this.attributes[name]; },
+    getAttribute(name) { return name === 'data-problem-go' ? String(i) : null; },
+  }));
+  const next = { addEventListener(name, callback) { this.listeners ||= {}; this.listeners[name] = callback; } };
+  const controls = { hidden: true, querySelectorAll() { return buttons; }, querySelector() { return next; } };
+  const rootRect = { top: -20, bottom: 1800 };
+  const root = { querySelectorAll() { return steps; }, getBoundingClientRect() { return rootRect; } };
+  const status = { hidden: true, textContent: '' };
+  const media = { matches: false, addEventListener() {} };
+  const window = {
+    innerHeight: 800,
+    matchMedia() { return media; },
+    addEventListener(name, callback) { listeners[name] = callback; },
+    requestAnimationFrame(callback) { pendingFrame = callback; return 1; },
+  };
+  const document = {
+    getElementById(id) { return id === 'problemStoryStatus' ? status : id === 'problemStory' ? root : null; },
+    querySelector(selector) { return selector === '.problem-story-controls' ? controls : null; },
+  };
+  const source = script.replace(/^<script>|<\/script>$/g, '');
+  new VmScript(source).runInNewContext({ document, window });
+  const flush = (event) => { listeners[event](); pendingFrame?.(); pendingFrame = null; };
+  const states = () => steps.map((step) => step.dataset.state);
+  assert.deepEqual(states(), ['ativo', 'início', 'início']);
+  stepRects.splice(0, 3, { top: -400, bottom: 160 }, { top: 180, bottom: 740 }, { top: 760, bottom: 1320 });
+  flush('scroll');
+  assert.deepEqual(states(), ['concluído', 'ativo', 'início']);
+  stepRects.splice(0, 3, { top: -950, bottom: -390 }, { top: -370, bottom: 190 }, { top: 210, bottom: 770 });
+  flush('scroll');
+  assert.deepEqual(states(), ['concluído', 'concluído', 'ativo']);
+  stepRects.splice(0, 3, { top: -400, bottom: 160 }, { top: 180, bottom: 740 }, { top: 760, bottom: 1320 });
+  flush('scroll');
+  assert.deepEqual(states(), ['concluído', 'ativo', 'início']);
+  window.innerHeight = 1000;
+  stepRects.splice(0, 3, { top: -250, bottom: 310 }, { top: 330, bottom: 890 }, { top: 910, bottom: 1470 });
+  flush('resize');
+  assert.deepEqual(states(), ['concluído', 'ativo', 'início']);
+  media.matches = true;
+  buttons[2].listeners.click();
+  assert.equal(steps[2].lastScroll.behavior, 'auto');
+  assert.deepEqual(states(), ['concluído', 'concluído', 'ativo']);
+  rootRect.top = -1800; rootRect.bottom = -1;
+  flush('scroll');
+  assert.deepEqual(states(), ['concluído', 'concluído', 'concluído']);
+  assert.match(status.textContent, /Narrativa concluída/);
+  rootRect.top = 1001; rootRect.bottom = 2800;
+  flush('scroll');
+  assert.deepEqual(states(), ['ativo', 'início', 'início']);
+  assert.equal(controls.hidden, false);
+  assert.equal(status.hidden, false);
 });
 
 test('cada cartão de Para quem é contém sua própria arte e ícone', () => {
