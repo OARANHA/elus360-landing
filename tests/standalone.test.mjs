@@ -44,11 +44,12 @@ test('a narrativa de problema usa três imagens compactas sem markup antigo sobr
   assert.equal((section.match(/<figure class="problem-step-visual"/g) || []).length, 3);
   assert.equal((section.match(/class="problem-step-photo"/g) || []).length, 3);
   assert.equal((section.match(/class="problem-step-art(?: problem-step-art--mascot)?"/g) || []).length, 3);
-  assert.match(html, /\.problem-story-section \.problem-container\{[^}]*max-width:1140px[^}]*padding-inline:0/);
-  assert.match(html, /grid-template-columns:repeat\(3,minmax\(0,315px\)\);justify-content:center;[^}]*gap:20px/);
+  assert.match(html, /\.problem-story-section \.problem-container\{[^}]*max-width:1000px[^}]*padding-inline:0/);
+  assert.match(html, /grid-template-columns:repeat\(3,minmax\(0,290px\)\);justify-content:center;[^}]*gap:14px/);
   assert.match(html, /\.problem-step-visual\{[^}]*aspect-ratio:9\/16/);
-  assert.match(html, /@media\(prefers-reduced-motion:reduce\)\{\.problem-step/);
+  assert.match(html, /@media\(prefers-reduced-motion:reduce\)[\s\S]*?\.problem-step/);
   assert.match(section, /aria-label="Narrativa em três etapas; todos os textos permanecem visíveis"/);
+  assert.match(section, /class="problem-story-toolbar"/);
   assert.match(section, /Role para percorrer as etapas; use os números para selecionar uma diretamente/);
   assert.match(section, /aria-label="Selecionar etapa 2: As pontas se conectam"/);
   assert.match(section, /As cenas e telas são ilustrativas e fictícias/);
@@ -87,7 +88,7 @@ test('a etapa ativa acompanha a rolagem nos dois sentidos, redimensionamento e m
   const next = { addEventListener(name, callback) { this.listeners ||= {}; this.listeners[name] = callback; } };
   const controls = { hidden: true, querySelectorAll() { return buttons; }, querySelector() { return next; } };
   const rootRect = { top: 100, bottom: 1720, height: 1620 };
-  const root = { querySelectorAll() { return steps; }, getBoundingClientRect() { return rootRect; } };
+  const root = { querySelectorAll() { return steps; }, getBoundingClientRect() { return rootRect; }, dispatchEvent() {} };
   const status = { hidden: true, textContent: '' };
   const hint = { hidden: true };
   const reduced = { matches: false, addEventListener() {} };
@@ -97,6 +98,7 @@ test('a etapa ativa acompanha a rolagem nos dois sentidos, redimensionamento e m
     matchMedia(query) { return query.includes('max-width') ? { matches: this.innerWidth <= 760 } : reduced; },
     addEventListener(name, callback) { listeners[name] = callback; },
     requestAnimationFrame(callback) { pendingFrame = callback; return 1; },
+    CustomEvent: class CustomEvent { constructor(type, options) { this.type = type; this.detail = options.detail; } },
   };
   const document = {
     getElementById(id) { return id === 'problemStoryStatus' ? status : id === 'problemStoryHint' ? hint : null; },
@@ -104,7 +106,7 @@ test('a etapa ativa acompanha a rolagem nos dois sentidos, redimensionamento e m
     querySelectorAll() { return []; },
   };
   const source = script.replace(/^<script>|<\/script>$/g, '');
-  new VmScript(source).runInNewContext({ document, window });
+  new VmScript(source).runInNewContext({ document, window, CustomEvent: window.CustomEvent });
   const flush = (event) => { listeners[event](); pendingFrame?.(); pendingFrame = null; };
   const states = () => steps.map((step) => step.dataset.state);
   assert.deepEqual(states(), ['ativo', 'início', 'início']);
@@ -346,16 +348,14 @@ test('as três cenas seguem a rolagem e os controles permanecem acessíveis', ()
   assert.doesNotMatch(source, /gsap|setInterval/);
 });
 
-test('as artes cabem na moldura e cada cena aciona o Motion com fallback acessível', () => {
+test('a mudança da etapa usa Motion de forma sutil e respeita movimento reduzido', () => {
   const html = readFileSync('standalone-dist/index.html', 'utf8');
-  assert.match(html, /cinestory-art-frame img\{[^}]*inset:6% 3%;width:94%;height:88%;max-width:none;max-height:none;object-fit:contain/);
-  assert.match(html, /cinestory-art-frame--elus img\{inset:8% 10%;width:80%;height:84%/);
   const source = readFileSync('scripts/problem-motion.mjs', 'utf8');
-  const controller = readFileSync('public/brand/problem-scroll.js', 'utf8');
+  assert.match(html, /src="\/brand\/problem-motion\.js"/);
   assert.match(source, /from 'motion\/mini'/);
-  assert.match(source, /reduced\.matches/);
-  assert.match(source, /elus:scenechange/);
-  assert.match(controller, /CustomEvent\('elus:scenechange'/);
+  assert.match(source, /prefers-reduced-motion: reduce/);
+  assert.match(source, /elus:problem-step/);
+  assert.match(source, /if \(reduced\.matches\) return/);
   const bundle = readFileSync('public/brand/problem-motion.js', 'utf8');
   new VmScript(bundle);
   assert.ok(bundle.length > 3000);
