@@ -4,7 +4,7 @@
 - Rota isolada **/curso**, implementada em app/curso/route.ts, preservando a landing comercial.
 - Currículo público: **35 módulos e 173 aulas**, incluindo textos didáticos e capturas.
 - Jornadas: **10 segmentos, 30 jornadas e 120 cenas** fictícias.
-- **845 imagens** referenciadas com sufixo _elus.jpg no caminho /curso/capturas/.
+- **844 imagens** referenciadas com sufixo _elus.jpg no caminho /curso/capturas/.
 - **20 módulos internos Admin** excluídos integralmente (63 aulas); **6 módulos avançados** fora da versão pública (23 aulas); **6 passos** de gestão de provedor/LLM retirados.
 - Somente texto e imagens. Nenhum player de vídeo e nenhuma integração YouTube/Vimeo.
 
@@ -16,6 +16,8 @@
 - scripts/validate-curso.mjs — checagens de limites, contagens, caminhos e ausência de vídeo.
 
 ## Imagens — entrega pendente
+
+O inventário público aprovado tinha 845 capturas. Uma captura adicional foi retirada após detectar conteúdo interno de LGPD referente à exclusão de tenants. A integração contém agora 844 referências. O mapeamento original permanece disponível para auditoria, mas não deve ser publicado sem esse filtro adicional.
 As imagens _elus **não foram recebidas nem incluídas nesta PR**. Colocar as capturas autorizadas em public/curso/capturas/ preservando os nomes:
 - Original: inbox--conhecendo-a-tela--p1.jpg
 - Substituto: inbox--conhecendo-a-tela--p1_elus.jpg
