@@ -143,4 +143,38 @@ a{color:inherit}button,input{font:inherit}button{cursor:pointer}img{max-width:10
   .mobile-back-to-lesson{display:block;padding:13px 16px;margin:24px 12px 0;color:#1843a3;background:#e9f2ff;text-align:center;font-weight:800;font-size:12px;border-radius:10px;text-decoration:none}
 }
 @media(max-width:570px){.mobile-course-index{top:70px}}
+
+/* Curso: fotos anotadas em SVG. Geometria única 1440×900, preservada no modal. */
+.shot-picture{position:relative;width:100%;aspect-ratio:16/10;isolation:isolate;background:#fff}
+.shot-picture img,.shot-window .shot-picture img{position:absolute;inset:0;width:100%;height:100%;display:block;object-fit:fill;aspect-ratio:auto}
+.shot-picture .annotation-svg{position:absolute;inset:0;width:100%;height:100%;z-index:1;pointer-events:none}
+.annotation-veil{fill:rgba(8,22,53,.16)}
+.annotation-outline{fill:none;stroke:#b42cd7;stroke-width:3.3}
+.annotation-line{fill:none;stroke:#b42cd7;stroke-width:3.3;stroke-linecap:round}
+.annotation-arrow{fill:#b42cd7}
+.annotation-badge{position:absolute;z-index:2;transform:translate(-50%,-50%);display:grid;place-items:center;width:26px;height:26px;border-radius:50%;background:#8a21b5;color:white;font-size:12px;font-weight:800;line-height:1;box-shadow:0 0 0 3px white;pointer-events:none;font-variant-numeric:tabular-nums}
+.shot-zoom-surface{position:absolute;inset:0;z-index:3;display:block;border:0;border-radius:0;width:100%;height:100%;padding:0;margin:0;background:transparent;cursor:zoom-in;color:transparent}
+.shot-zoom-surface:focus-visible{outline:4px solid #8a21b5;outline-offset:-4px;border-radius:2px}
+.course-shot.is-missing .shot-picture{display:none}
+.course-shot .shot-legend{list-style:none;counter-reset:none;display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:9px 20px;margin:16px 0 0;padding:0}
+.shot-legend li,.dialog-legend li{display:flex;align-items:flex-start;gap:9px;line-height:1.5;font-size:12px;color:#455874}
+.legend-badge{display:inline-flex;align-items:center;justify-content:center;flex:0 0 23px;width:23px;height:23px;border-radius:100%;font-size:11px;font-weight:800;background:#8a21b5;color:#fff}
+.shot-legend li span:last-child,.dialog-legend li span:last-child{padding-top:3px}
+.course-shot.is-missing .shot-legend{display:none}
+.image-dialog{width:min(96vw,1650px);max-width:96vw;max-height:94dvh;padding:18px;background:#fff;border-radius:14px;overflow:auto}
+.image-dialog [data-close-dialog]{position:sticky;top:0;right:0;z-index:4;display:block;margin-left:auto;margin-bottom:12px;cursor:pointer;box-shadow:0 2px 12px rgba(12,27,64,.12)}
+.dialog-media{width:100%;max-height:74dvh;overflow:auto;border-radius:10px;background:#f5f7fd}
+.dialog-media .shot-picture{width:100%;min-width:0;max-height:none}
+.image-dialog .shot-picture img{max-height:none;object-fit:fill}
+.image-dialog .dialog-label{font-size:14px;font-weight:800;color:#142844;margin:14px 0}
+.image-dialog .dialog-legend{list-style:none;display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px 24px;margin:12px 0 4px;padding:0}
+.image-dialog .annotation-badge{width:30px;height:30px;font-size:13px}
+@media(max-width:700px){
+  .course-shot .shot-legend,.image-dialog .dialog-legend{grid-template-columns:1fr}
+  .shot-picture .annotation-badge{width:20px;height:20px;font-size:10px;box-shadow:0 0 0 2px #fff}
+  .image-dialog{padding:10px}
+  .dialog-media .shot-picture{min-width:760px}
+  .image-dialog .shot-picture .annotation-badge{width:27px;height:27px;font-size:12px}
+}
+
 @media(prefers-reduced-motion:reduce){html{scroll-behavior:auto}*,*::before,*::after{transition:none!important;animation:none!important;transform:none!important}}

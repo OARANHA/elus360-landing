@@ -13,24 +13,45 @@
   });
 
   const dialog = document.getElementById("image-dialog");
-  const dialogImage = dialog?.querySelector("img");
-  const dialogLabel = dialog?.querySelector("p");
-  if (dialog && dialogImage && dialogLabel && typeof dialog.showModal === "function") {
+  const dialogMedia = dialog?.querySelector("[data-dialog-media]");
+  const dialogLabel = dialog?.querySelector(".dialog-label");
+  const dialogLegend = dialog?.querySelector(".dialog-legend");
+  if (dialog && dialogMedia && dialogLabel && dialogLegend && typeof dialog.showModal === "function") {
+    // O clique na imagem, inclusive sobre selos SVG, abre a mesma figura anotada.
     document.addEventListener("click", (event) => {
       const target = event.target instanceof Element ? event.target.closest("[data-zoom]") : null;
       if (!target) return;
       const figure = target.closest("[data-image-figure]");
-      if (figure?.classList.contains("is-missing")) return;
+      if (!figure || figure.classList.contains("is-missing")) return;
       const src = target.getAttribute("data-zoom") ?? "";
       if (!/^\/curso\/capturas\/[a-z0-9_-]+_elus\.png$/i.test(src)) return;
-      dialogImage.src = src;
-      dialogImage.alt = target.getAttribute("data-label") ?? "Captura de tela ELUS360";
-      dialogLabel.textContent = dialogImage.alt;
-      dialog.showModal();
+      const original = figure.querySelector("[data-annotated]");
+      if (!original) return;
+      const copy = original.cloneNode(true);
+      // No modal usamos uma cópia SEM outro botão. A máscara recebe um ID diferente,
+      // evitando conflito com o SVG que permanece atrás do dialog.
+      copy.querySelector(".shot-zoom-surface")?.remove();
+      const mask = copy.querySelector("svg mask[id]");
+      if (mask) {
+        mask.id += "-dialog";
+        copy.querySelector(".annotation-veil")?.setAttribute("mask", "url(#" + mask.id + ")");
+      }
+      const image = copy.querySelector("img");
+      if (image) image.loading = "eager";
+      dialogMedia.replaceChildren(copy);
+      dialogMedia.scrollLeft = 0;
+      dialogMedia.scrollTop = 0;
+      dialogLabel.textContent = target.getAttribute("data-label") ?? "Captura ELUS360";
+      dialogLegend.replaceChildren(...Array.from(figure.querySelectorAll(".shot-legend li")).map((li) => li.cloneNode(true)));
+      try { dialog.showModal(); } catch { dialogMedia.replaceChildren(); }
     });
     dialog.querySelector("[data-close-dialog]")?.addEventListener("click", () => dialog.close());
     dialog.addEventListener("click", (event) => { if (event.target === dialog) dialog.close(); });
-    dialog.addEventListener("close", () => dialogImage.removeAttribute("src"));
+    dialog.addEventListener("close", () => {
+      dialogMedia.replaceChildren();
+      dialogLegend.replaceChildren();
+      dialogLabel.textContent = "";
+    });
   }
 
   const search = document.getElementById("course-search");

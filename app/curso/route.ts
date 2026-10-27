@@ -1,10 +1,11 @@
 import curriculum from "../../lib/curso-publico.json";
 
-type Step = { id: string; title: string; text: string; tip: string; image: string; labels: string[] };
+type Mark = { x: number; y: number; w: number; h: number; type: "caixa" | "seta" | "numero"; label: string };
+type Step = { id: string; title: string; text: string; tip: string; image: string; labels: string[]; marks: Mark[] };
 type Lesson = { id: string; title: string; objective: string; steps: Step[]; hasRevision: boolean };
 type Module = { id: string; title: string; summary: string; lessons: Lesson[] };
 type Group = { name: string; modules: Module[] };
-type Scene = { id: string; title: string; customer: string; operation: string; value: string; image: string };
+type Scene = { id: string; title: string; customer: string; operation: string; value: string; image: string; marks: Mark[] };
 type Journey = { id: string; title: string; context: string; outcome: string; note: string; scenes: Scene[] };
 type Segment = { id: string; title: string; summary: string; journeys: Journey[] };
 const course = curriculum as unknown as { sourceVersion: string; groups: Group[]; segments: Segment[] };
@@ -18,15 +19,92 @@ const journeyHref = (segment: Segment, journey: Journey): string => "/curso?segm
 const short = (s: string) => s.trim().toLocaleLowerCase("pt-BR").normalize("NFD").replace(/[\u0300-\u036f]/g, "");
 const attributes = (s: string) => esc(short(s));
 
-function screenshot(src: string, label: string, notes: string[] = []): string {
+// Coordenadas vindas do capturador do curso original (1440 × 900).
+// A foto PNG é 2160 × 1350, mesma proporção: o viewBox acompanha a imagem sem distorção.
+const CANVAS_W = 1440, CANVAS_H = 900;
+const MARK_PAD = 6, MARK_R = 22;
+type Rect = { x: number; y: number; w: number; h: number };
+type Point = [number, number];
+const pct = (v: number, max: number): string => ((v / max) * 100).toFixed(4) + "%";
+const attr = (v: number): string => String(Math.round(v * 100) / 100);
+function isFree(p: Point, boxes: Rect[], badges: Point[]): boolean {
+  if (p[0] < MARK_R || p[1] < MARK_R || p[0] > CANVAS_W - MARK_R || p[1] > CANVAS_H - MARK_R) return false;
+  for (const c of boxes)
+    if (p[0] > c.x - MARK_R && p[0] < c.x + c.w + MARK_R && p[1] > c.y - MARK_R && p[1] < c.y + c.h + MARK_R) return false;
+  for (const b of badges)
+    if (Math.hypot(p[0] - b[0], p[1] - b[1]) < 2 * MARK_R + 4) return false;
+  return true;
+}
+function badgeLocation(box: Rect, type: Mark["type"], boxes: Rect[], occupied: Point[]): { badge: Point; tip?: Point } {
+  const { x, y, w, h } = box, cx = x + w / 2, cy = y + h / 2;
+  const choices: { badge: Point; tip?: Point }[] = [];
+  if (type === "seta") {
+    const len = 110, gap = 10, diag = len * .7;
+    const dirs: [Point, Point][] = [
+      [[x - gap,cy],[-len,0]],[[cx,y - gap],[0,-len]],[[x + w + gap,cy],[len,0]],
+      [[cx,y + h + gap],[0,len]],[[x - gap,y - gap],[-diag,-diag]],
+      [[x + w + gap,y - gap],[diag,-diag]],[[x - gap,y + h + gap],[-diag,diag]],[[x + w + gap,y + h + gap],[diag,diag]],
+    ];
+    for (const [tip,d] of dirs) choices.push({badge:[tip[0]+d[0],tip[1]+d[1]],tip});
+  } else {
+    const f = MARK_R + 6;
+    const places: Point[] = [[x-f,cy],[x-f,y-f+MARK_R],[cx,y-f],[x+w+f,cy],[cx,y+h+f],[x-f,y-f],[x+w+f,y-f]];
+    for (const badge of places) choices.push({badge});
+  }
+  const found = choices.find(c=>isFree(c.badge,boxes,occupied));
+  if (found) return found;
+  const first = choices[0];
+  return { ...first, badge:[
+    Math.min(CANVAS_W-MARK_R,Math.max(MARK_R,first.badge[0])),
+    Math.min(CANVAS_H-MARK_R,Math.max(MARK_R,first.badge[1]))
+  ] };
+}
+function arrowSvg(start: Point, end: Point): string {
+  const a = Math.atan2(end[1]-start[1],end[0]-start[0]), size=23, spread=.45;
+  const back: Point = [end[0]-.8*size*Math.cos(a),end[1]-.8*size*Math.sin(a)];
+  const p1: Point = [end[0]-size*Math.cos(a-spread),end[1]-size*Math.sin(a-spread)];
+  const p2: Point = [end[0]-size*Math.cos(a+spread),end[1]-size*Math.sin(a+spread)];
+  const pt = (p: Point) => attr(p[0])+","+attr(p[1]);
+  return '<line class="annotation-line" x1="'+attr(start[0])+'" y1="'+attr(start[1])+'" x2="'+attr(back[0])+'" y2="'+attr(back[1])+'" vector-effect="non-scaling-stroke"/>' +
+    '<polygon class="annotation-arrow" points="'+pt(end)+" "+pt(p1)+" "+pt(p2)+'"/>';
+}
+function annotationLayer(marks: Mark[], src: string): string {
+  if (!marks.length) return "";
+  const boxes = marks.map(m => ({x:m.x-MARK_PAD,y:m.y-MARK_PAD,w:m.w+MARK_PAD*2,h:m.h+MARK_PAD*2}));
+  // IDs estáveis, independentes do número de visualizações; a ampliação troca o sufixo
+  // para que cada máscara SVG seja única no documento.
+  const maskId = "annotation-"+src.split("/").pop()!.replace(/[^a-z0-9_-]/gi,"-");
+  const cutouts = boxes.map(c=>'<rect x="'+attr(c.x)+'" y="'+attr(c.y)+'" width="'+attr(c.w)+'" height="'+attr(c.h)+'" rx="8" fill="black"/>').join("");
+  let outlines="",arrows="",badges="";
+  const occupied: Point[]=[];
+  marks.forEach((m,i)=>{
+    const c=boxes[i];
+    if (m.type !== "numero")
+      outlines += '<rect class="annotation-outline" x="'+attr(c.x)+'" y="'+attr(c.y)+'" width="'+attr(c.w)+'" height="'+attr(c.h)+'" rx="8" vector-effect="non-scaling-stroke"/>';
+    const loc=badgeLocation(c,m.type,boxes,occupied);
+    if(m.type==="seta" && loc.tip) arrows+=arrowSvg(loc.badge,loc.tip);
+    occupied.push(loc.badge);
+    badges+='<span class="annotation-badge" style="left:'+pct(loc.badge[0],CANVAS_W)+';top:'+pct(loc.badge[1],CANVAS_H)+'" aria-hidden="true">'+(i+1)+'</span>';
+  });
+  const svg='<svg class="annotation-svg" viewBox="0 0 '+CANVAS_W+' '+CANVAS_H+'" preserveAspectRatio="none" aria-hidden="true">' +
+    '<defs><mask id="'+maskId+'"><rect width="'+CANVAS_W+'" height="'+CANVAS_H+'" fill="white"/>'+cutouts+'</mask></defs>' +
+    '<rect class="annotation-veil" width="'+CANVAS_W+'" height="'+CANVAS_H+'" mask="url(#'+maskId+')"/>' +
+    outlines+arrows+'</svg>';
+  return svg+badges;
+}
+function screenshot(src: string, label: string, marks: Mark[] = [], notes: string[] = []): string {
   if (!src) return '<p class="image-review-note" role="note">Captura desta etapa em atualização para refletir a interface atual do ELUS360.</p>';
   if (!imgPath(src)) return "";
+  // A estrutura anotada é clonada ao ampliar: foto, SVG e selos usam a mesma geometria.
+  const annotations=annotationLayer(marks,src);
+  const captions=marks.length ? marks.map(m=>m.label) : notes;
   return '<figure class="course-shot" data-image-figure>' +
-    '<div class="shot-window"><div class="shot-top"><span></span><span></span><span></span><b>ELUS360 · Demonstração</b></div>' +
-    '<img src="' + esc(src) + '" width="1440" height="900" loading="lazy" decoding="async" alt="' + esc(label) + '" data-shot>' +
-    '<div class="shot-missing" role="note">Imagem ELUS360 aguardando envio.<small>O conteúdo escrito desta etapa continua disponível.</small></div></div>' +
-    '<figcaption><span>' + esc(label) + '</span><button type="button" class="zoom-btn" data-zoom="' + esc(src) + '" data-label="' + esc(label) + '">Ampliar imagem <span aria-hidden="true">↗</span></button></figcaption>' +
-    (notes.length ? '<ul class="shot-labels" aria-label="Pontos de atenção">' + notes.map((note) => '<li>' + esc(note) + '</li>').join("") + '</ul>' : "") +
+    '<div class="shot-window"><div class="shot-top"><span></span><span></span><span></span><b>ELUS360 · Tela ilustrada</b></div>' +
+    '<div class="shot-picture" data-annotated><img src="'+esc(src)+'" width="1440" height="900" loading="lazy" decoding="async" alt="'+esc(label)+'" data-shot>' +
+    annotations+'<button type="button" class="shot-zoom-surface" data-zoom="'+esc(src)+'" data-label="'+esc(label)+'" aria-label="Ampliar captura anotada: '+esc(label)+'"></button></div>' +
+    '<div class="shot-missing" role="note">Captura indisponível.<small>Os passos continuam disponíveis para leitura.</small></div></div>' +
+    '<figcaption><span>'+esc(label)+'</span><button type="button" class="zoom-btn" data-zoom="'+esc(src)+'" data-label="'+esc(label)+'">Ampliar com marcações <span aria-hidden="true">↗</span></button></figcaption>' +
+    (captions.length ? '<ol class="shot-legend" aria-label="Legenda das marcações">'+captions.map((note,i)=>'<li><span class="legend-badge" aria-hidden="true">'+(i+1)+'</span><span>'+esc(note)+'</span></li>').join("")+'</ol>' : '') +
     '</figure>';
 }
 
@@ -108,7 +186,7 @@ function lessonView(module: Module, lesson: Lesson): string {
     '<article class="lesson-body">' + lesson.steps.map((step, idx) => '<section class="lesson-step" id="etapa-' + esc(step.id) + '" aria-labelledby="step-title-' + esc(step.id) + '">' +
       '<div class="step-index">' + String(idx + 1).padStart(2, "0") + '</div><div class="step-contents"><h2 id="step-title-' + esc(step.id) + '">' + esc(step.title) + '</h2>' +
       '<p>' + esc(step.text) + '</p>' + (step.tip ? '<aside class="lesson-tip"><strong>Para lembrar</strong><p>' + esc(step.tip) + '</p></aside>' : "") +
-      screenshot(step.image, step.title, step.labels) + '</div></section>').join("") + '</article>' +
+      screenshot(step.image, step.title, step.marks, step.labels) + '</div></section>').join("") + '</article>' +
     '<nav class="bottom-nav" aria-label="Navegar entre aulas">' +
     (before ? '<a class="prev-lesson" href="' + lessonHref(before.module, before.lesson) + '"><small>← Aula anterior</small><b>' + esc(before.lesson.title) + '</b></a>' : '<a class="prev-lesson" href="/curso"><small>← Voltar</small><b>Todos os módulos</b></a>') +
     (after ? '<a class="next-lesson" href="' + lessonHref(after.module, after.lesson) + '"><small>Próxima aula →</small><b>' + esc(after.lesson.title) + '</b></a>' : '<a class="next-lesson" href="/curso"><small>Você chegou ao fim</small><b>Voltar aos módulos →</b></a>') +
@@ -121,7 +199,7 @@ function journeyView(segment: Segment, journey: Journey): string {
     '<p class="demo-disclaimer">Simulação fictícia para fins de aprendizagem, não um caso real de cliente nem resultado garantido.</p></div>' +
     '<article class="lesson-body">' + journey.scenes.map((scene, i) => '<section class="lesson-step"><span class="step-index">' + String(i + 1).padStart(2, "0") + '</span><div class="step-contents"><h2>' + esc(scene.title) + '</h2>' +
       '<p>' + esc(scene.customer) + '</p><div class="lesson-tip"><strong>Como a operação funciona</strong><p>' + esc(scene.operation) + '</p></div>' +
-      '<p>' + esc(scene.value) + '</p>' + screenshot(scene.image, scene.title) + '</div></section>').join("") +
+      '<p>' + esc(scene.value) + '</p>' + screenshot(scene.image, scene.title, scene.marks) + '</div></section>').join("") +
     '</article><nav class="bottom-nav"><a class="button button-main" href="/curso#jornadas">Explorar outras jornadas <span aria-hidden="true">→</span></a></nav>';
 }
 
@@ -160,7 +238,7 @@ function render(request: Request): string {
     (current ? navigation(module, lesson) : "") + '</div>' +
     '<footer class="course-footer"><div><span>ELUS<span class="brand-360">360</span> · Academia</span><p>Conteúdo educativo. As telas e recursos disponíveis podem variar conforme a versão e as permissões da sua empresa.</p></div>' +
     '<nav aria-label="Rodapé"><a href="/">Site comercial</a><a href="/privacidade">Privacidade</a><a href="/#contato">Contato</a></nav></footer>' +
-    '<dialog class="image-dialog" id="image-dialog" aria-label="Captura de tela ampliada"><button type="button" data-close-dialog>Fechar ×</button><img alt=""><p></p></dialog>' +
+    '<dialog class="image-dialog" id="image-dialog" aria-label="Captura de tela ampliada"><button type="button" data-close-dialog>Fechar ×</button><div class="dialog-media" data-dialog-media></div><p class="dialog-label"></p><ol class="dialog-legend" aria-label="Legenda ampliada"></ol></dialog>' +
     '</body></html>';
 }
 

@@ -52,3 +52,14 @@ Nenhuma modificação na landing /, na operação do CRM, no banco de leads, na 
 
 ## Adequação das capturas de agentes (27/10/2026)
 Seis capturas da lista e do menu de agentes exibiam nomes de provedor ou modelo de IA. Foram retiradas da pasta pública e não são referenciadas no curso. O passo sobre a empresa/modelo foi revisado para manter somente orientações de operação; os outros textos didáticos permanecem. Há indicação discreta de captura pendente nessas etapas. O currículo conserva 35 módulos e 173 aulas, mas passa a exibir **838 imagens verificadas**. Os arquivos antigos permanecem recuperáveis no histórico Git. A substituição futura requer capturas atuais que não exponham informações internas.
+
+
+## Contornos e marcações das capturas (referência HTML de 27/10/2026)
+
+O curso público recupera a geometria didática do `index(1).html` entregue pelo proprietário: **838 capturas** utilizáveis, **1.546 marcações** (`caixa`, `seta`, `numero`). O catálogo `lib/curso-publico.json` agora guarda `marks` por passo/cena com `x,y,w,h,type,label`. As seis capturas de agentes retidas não recebem marcações nem reaparecem no curso.
+
+O leitor projeta contornos, setas, números e máscara semitransparente por SVG com `viewBox="0 0 1440 900"`, sobre a captura PNG de proporção idêntica 16:10. **A imagem é sempre o fundo**, e o sombreamento é leve para conservar o contexto visual. A legenda numerada fora da imagem fornece as descrições mesmo sem JavaScript.
+
+O botão de ampliação e o clique na foto abrem `<dialog>` nativo com uma cópia completa da composição: **foto + mesma camada SVG + mesmos números + legenda**. A máscara clonada recebe outro ID para evitar conflitos entre o original e o diálogo. Em mobile, o diálogo permite rolar horizontalmente a captura ampliada. O diálogo usa foco e tecla Escape nativos; o conteúdo do curso permanece legível sem JS.
+
+O novo contrato `node scripts/validate-curso.mjs` confere as 838 imagens, 1546 marcas e bounds estritos de cada retângulo. É necessária a conferência visual em navegador real (desktop, mobile, zoom e redução de movimento); CI GREEN por si só não comprova ausência de clipping em todas as marcações.
