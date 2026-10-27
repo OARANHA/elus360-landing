@@ -63,3 +63,15 @@ O leitor projeta contornos, setas, números e máscara semitransparente por SVG 
 O botão de ampliação e o clique na foto abrem `<dialog>` nativo com uma cópia completa da composição: **foto + mesma camada SVG + mesmos números + legenda**. A máscara clonada recebe outro ID para evitar conflitos entre o original e o diálogo. Em mobile, o diálogo permite rolar horizontalmente a captura ampliada. O diálogo usa foco e tecla Escape nativos; o conteúdo do curso permanece legível sem JS.
 
 O novo contrato `node scripts/validate-curso.mjs` confere as 838 imagens, 1546 marcas e bounds estritos de cada retângulo. É necessária a conferência visual em navegador real (desktop, mobile, zoom e redução de movimento); CI GREEN por si só não comprova ausência de clipping em todas as marcações.
+
+## Modo Simular — prática guiada (27/10/2026)
+
+A opção **Ler | Simular** reproduz os exercícios de clique do HTML de referência, agora sobre as capturas _elus.png aprovadas. O curso contém 724 etapas didáticas; **234 etapas** de **128 aulas** possuem um retângulo capturas[id].clicar original, mapeado para step.target={x,y,w,h} em 1440×900. Etapas sem alvo apresentam a tela e o botão **Continuar**; as seis etapas com capturas de IA retidas continuam textuais, sem recriar alvos.
+
+O modo Simular é acessado pela URL da aula com o parâmetro mode=simular. A rota entrega HTML no servidor com link para Ler e um script inerte type=application/json contendo apenas os passos da aula selecionada, com escape adequado dos caracteres HTML. public/curso/simulator.js constrói a interface no cliente, sem requests para o CRM, sem credenciais e sem alterar a conta.
+
+**Comportamento:** cada etapa possui captura, objetivo textual, dica quando presente, alvo de clique destacado, feedback de clique errado, confirmação de acerto, avanço, voltar, pular e reiniciar. Concluir marca a aula exclusivamente no localStorage (elus360:curso:concluidas:v1), compatível com o leitor; não há nota, matrícula ou certificado nem progresso remoto. O estado final oferece retorno ou próxima aula.
+
+O layout mantém 16:10 e posiciona o alvo a partir de porcentagens das coordenadas originais. Controles de toque têm dimensões mínimas, foco visível para teclado, feedback com role=status e progressbar acessível. Com prefers-reduced-motion, não pulsa e o acerto aguarda avanço explícito. Sem JavaScript, mantém alternativa de leitura.
+
+**Gate de testes:** node scripts/validate-curso.mjs valida presença dos 234 alvos, 128 aulas, geometria do viewBox, ausência de alvo em capturas retidas e mode=simular. Ainda é preciso QA de navegador desktop/mobile, teclado, erro/acerto, conclusão e redução de movimento além do CI.

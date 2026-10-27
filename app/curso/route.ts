@@ -1,7 +1,8 @@
 import curriculum from "../../lib/curso-publico.json";
 
+type Target = { x: number; y: number; w: number; h: number } | null;
 type Mark = { x: number; y: number; w: number; h: number; type: "caixa" | "seta" | "numero"; label: string };
-type Step = { id: string; title: string; text: string; tip: string; image: string; labels: string[]; marks: Mark[] };
+type Step = { id: string; title: string; text: string; tip: string; image: string; labels: string[]; marks: Mark[]; target: Target };
 type Lesson = { id: string; title: string; objective: string; steps: Step[]; hasRevision: boolean };
 type Module = { id: string; title: string; summary: string; lessons: Lesson[] };
 type Group = { name: string; modules: Module[] };
@@ -175,18 +176,50 @@ function moduleView(module: Module): string {
     '<div class="bottom-nav"><a class="button button-main" href="' + lessonHref(module, module.lessons[0]) + '">Começar este módulo <span aria-hidden="true">→</span></a></div>';
 }
 
-function lessonView(module: Module, lesson: Lesson): string {
+
+function simulatorView(module: Module, lesson: Lesson, next?: { module: Module; lesson: Lesson }): string {
+  // JSON is inert application data, never injected as executable script.
+  // Escaping "<" avoids accidentally closing the script element via source text.
+  const simData = JSON.stringify({
+    key: module.id + "/" + lesson.id,
+    steps: lesson.steps.map(p => ({ title:p.title, text:p.text, tip:p.tip, image:p.image, target:p.target }))
+  }).replace(/</g, "\\u003c").replace(/>/g, "\\u003e").replace(/&/g,"\\u0026");
+  return '<section class="course-simulator" data-sim-root aria-label="Simulador da aula">' +
+    '<div class="sim-intro"><div><p class="eyebrow">PRÁTICA GUIADA · AMBIENTE DE DEMONSTRAÇÃO</p><h2>Aprenda fazendo, passo a passo.</h2>' +
+    '<p>Encontre os controles na tela e avance pela simulação. Nenhum clique modifica informações do CRM real.</p></div>' +
+    '<span class="sim-icon" aria-hidden="true">✦</span></div>' +
+    '<div class="sim-progress-top"><span data-sim-count>Preparando a prática</span><span>Somente demonstração</span></div>' +
+    '<div class="sim-progress" data-sim-progress role="progressbar" aria-label="Progresso da simulação" aria-valuemin="0" aria-valuemax="' + lesson.steps.length + '" aria-valuenow="0"><span data-sim-progress-bar></span></div>' +
+    '<div class="sim-stage" data-sim-image aria-label="Tela interativa de treinamento"></div>' +
+    '<div class="sim-panel"><p class="eyebrow">O PRÓXIMO PASSO</p><h3 data-sim-title>Carregando etapa...</h3>' +
+    '<p data-sim-text>O exercício ficará disponível quando a página carregar.</p><aside class="sim-tip" data-sim-tip hidden></aside>' +
+    '<p class="sim-instruction" data-sim-prompt></p><p class="sim-feedback" role="status" aria-live="polite" aria-atomic="true" data-sim-feedback></p>' +
+    '<div class="sim-controls"><button type="button" class="sim-btn sim-btn-subtle" data-sim-action="back" disabled>← Voltar</button>' +
+    '<button type="button" class="sim-btn sim-btn-main" data-sim-action="next">Continuar →</button>' +
+    '<button type="button" class="sim-btn sim-btn-main" data-sim-action="repeat" hidden>Repetir a prática ↺</button>' +
+    '<a class="sim-btn sim-btn-main" data-sim-finish href="' + esc(next ? lessonHref(next.module, next.lesson) : "/curso") + '" hidden>' +
+    (next ? "Próxima aula →" : "Voltar aos módulos →") + '</a></div>' +
+    '<p class="sim-fallback">O simulador precisa de JavaScript. Você pode <a href="' + esc(lessonHref(module,lesson)) + '">continuar a leitura da aula</a>.</p></div>' +
+    '<script type="application/json" id="course-sim-data">' + simData + '</script>' +
+    '</section>';
+}
+
+function lessonView(module: Module, lesson: Lesson, mode: "ler" | "simular"): string {
   const number = module.lessons.indexOf(lesson) + 1;
   const at = allLessons.findIndex(e => e.module.id === module.id && e.lesson.id === lesson.id);
   const before = allLessons[at - 1], after = allLessons[at + 1];
+  const simulating = mode === "simular";
   return '<div class="reader-head"><div class="breadcrumbs"><a href="/curso">Curso</a><span aria-hidden="true">/</span><a href="' + moduleHref(module) + '">' + esc(module.title) + '</a><span aria-hidden="true">/</span><span>Aula ' + number + '</span></div>' +
     '<p class="eyebrow">AULA ' + String(number).padStart(2, "0") + ' / ' + String(module.lessons.length).padStart(2, "0") + ' · ' + esc(module.title) + '</p><h1>' + esc(lesson.title) + '</h1><p class="reader-lead">' + esc(lesson.objective) + '</p>' +
-    '<div class="lesson-toolbar"><span>Guia passo a passo · ' + lesson.steps.length + ' etapas disponíveis</span><button type="button" class="mark-read" data-mark-read="' + esc(module.id + "/" + lesson.id) + '" hidden>Marcar como concluída</button></div></div>' +
+    '<nav class="lesson-mode-switch" aria-label="Modo da aula"><a href="' + esc(lessonHref(module, lesson)) + '" ' + (!simulating ? 'aria-current="page"' : '') + '>Ler</a>' +
+    '<a href="' + esc(lessonHref(module, lesson) + "&mode=simular") + '" ' + (simulating ? 'aria-current="page"' : '') + '>Simular <span aria-hidden="true">✦</span></a></nav>' +
+    '<div class="lesson-toolbar"><span>' + (simulating ? 'Prática guiada' : 'Guia passo a passo') + ' · ' + lesson.steps.length + ' etapas disponíveis</span>' +
+    (simulating ? '' : '<button type="button" class="mark-read" data-mark-read="' + esc(module.id + "/" + lesson.id) + '" hidden>Marcar como concluída</button>') + '</div></div>' +
     (lesson.hasRevision ? '<div class="revision-note" role="note"><strong>Conteúdo em atualização.</strong> Etapas sobre configuração de provedores e modelos de IA foram retiradas. A ELUS360 gerencia essas configurações; as orientações disponíveis aqui continuam acessíveis.</div>' : "") +
-    '<article class="lesson-body">' + lesson.steps.map((step, idx) => '<section class="lesson-step" id="etapa-' + esc(step.id) + '" aria-labelledby="step-title-' + esc(step.id) + '">' +
+    (simulating ? simulatorView(module, lesson, after) : '<article class="lesson-body">' + lesson.steps.map((step, idx) => '<section class="lesson-step" id="etapa-' + esc(step.id) + '" aria-labelledby="step-title-' + esc(step.id) + '">' +
       '<div class="step-index">' + String(idx + 1).padStart(2, "0") + '</div><div class="step-contents"><h2 id="step-title-' + esc(step.id) + '">' + esc(step.title) + '</h2>' +
       '<p>' + esc(step.text) + '</p>' + (step.tip ? '<aside class="lesson-tip"><strong>Para lembrar</strong><p>' + esc(step.tip) + '</p></aside>' : "") +
-      screenshot(step.image, step.title, step.marks, step.labels) + '</div></section>').join("") + '</article>' +
+      screenshot(step.image, step.title, step.marks, step.labels) + '</div></section>').join("") + '</article>') +
     '<nav class="bottom-nav" aria-label="Navegar entre aulas">' +
     (before ? '<a class="prev-lesson" href="' + lessonHref(before.module, before.lesson) + '"><small>← Aula anterior</small><b>' + esc(before.lesson.title) + '</b></a>' : '<a class="prev-lesson" href="/curso"><small>← Voltar</small><b>Todos os módulos</b></a>') +
     (after ? '<a class="next-lesson" href="' + lessonHref(after.module, after.lesson) + '"><small>Próxima aula →</small><b>' + esc(after.lesson.title) + '</b></a>' : '<a class="next-lesson" href="/curso"><small>Você chegou ao fim</small><b>Voltar aos módulos →</b></a>') +
@@ -216,6 +249,7 @@ function render(request: Request): string {
   const segment = course.segments.find(s => s.id === url.searchParams.get("segment"));
   const journey = segment?.journeys.find(j => j.id === url.searchParams.get("journey"));
   const current = Boolean(module || journey);
+  const mode: "ler" | "simular" = lesson && url.searchParams.get("mode") === "simular" ? "simular" : "ler";
   const title = lesson ? lesson.title + " · " + module?.title : module ? module.title : journey ? journey.title : "Curso gratuito de ELUS360";
   const description = lesson ? lesson.objective : module ? module.summary : journey ? journey.context : "Aprenda a usar o ELUS360: atendimento, CRM, agentes de IA, automações e muito mais. Curso gratuito com aulas em texto e imagens.";
   const canonical = "https://elus360.com.br/curso" + (lesson && module ? "?m=" + encodeURIComponent(module.id) + "&a=" + encodeURIComponent(lesson.id) : module ? "?m=" + encodeURIComponent(module.id) : journey && segment ? "?segment=" + encodeURIComponent(segment.id) + "&journey=" + encodeURIComponent(journey.id) : "");
@@ -225,7 +259,8 @@ function render(request: Request): string {
     '<meta property="og:description" content="' + esc(description) + '"><meta name="theme-color" content="#07152e">' +
     '<link rel="icon" href="/brand/elus-vertical.png"><link rel="preconnect" href="https://fonts.googleapis.com">' +
     '<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap">' +
-    '<link rel="stylesheet" href="/curso/style.css"><script defer src="/curso/app.js"></script></head><body>' +
+    '<link rel="stylesheet" href="/curso/style.css"><script defer src="/curso/app.js"></script>' +
+    (mode === "simular" ? '<script defer src="/curso/simulator.js"></script>' : '') + '</head><body>' +
     '<a class="skip-link" href="#conteudo">Pular para o conteúdo</a>' +
     '<header class="course-header"><div class="header-inner"><a class="course-brand" href="/" aria-label="ELUS360, voltar ao site comercial">' +
     '<img src="/brand/elus-vertical.png" width="38" height="38" alt=""><span>ELUS<span class="brand-360">360</span></span><small>ACADEMIA</small></a>' +
@@ -233,7 +268,7 @@ function render(request: Request): string {
     '<div class="header-actions"><a class="header-login" href="https://elus.wandora.com.br/login">Entrar</a><a class="button header-contact" href="/#contato">Falar com a ELUS360 <span aria-hidden="true">↗</span></a></div></div></header>' +
     '<div class="' + (current ? "reading-shell" : "home-shell") + '"><main id="conteudo" class="course-main">' +
     (current ? '<a class="mobile-course-index" href="#ementa">Índice de módulos e aulas <span aria-hidden="true">↓</span></a>' : '') +
-    (lesson && module ? lessonView(module, lesson) : module ? moduleView(module) : journey && segment ? journeyView(segment, journey) : catalogView()) +
+    (lesson && module ? lessonView(module, lesson, mode) : module ? moduleView(module) : journey && segment ? journeyView(segment, journey) : catalogView()) +
     (current ? bottomCta() : bottomCta()) + '</main>' +
     (current ? navigation(module, lesson) : "") + '</div>' +
     '<footer class="course-footer"><div><span>ELUS<span class="brand-360">360</span> · Academia</span><p>Conteúdo educativo. As telas e recursos disponíveis podem variar conforme a versão e as permissões da sua empresa.</p></div>' +
