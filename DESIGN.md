@@ -222,3 +222,18 @@ Perguntas são botões de largura integral em cartões de curva média. Uma resp
 - **Hero:** traços arquitetônicos são desenhados em regiões distribuídas; a fotografia ganha nitidez e saturação; três colaboradores humanos em SVG e dois mascotes ELUS surgem progressivamente. O sentido de revelação não depende da posição horizontal. As figuras são ilustrações comerciais, não fotografias de pessoas reais.
 - **Problema/acompanhamento:** três cenas verticais com texto sobre imagem e artes ELUS existentes. A rolagem natural atualiza o foco e os estados início, ativo e concluído; a navegação numerada seleciona cada etapa. Nenhum conteúdo é ocultado; telas estreitas empilham os quadros e movimento reduzido remove transições e rolagem suave.
 - **Projetos HyperFrames:** fontes correspondentes em `motion-office/` e `motion-followup/`; a landing utiliza a animação no próprio DOM para fluidez e carregamento mais leve. A renderização da nova cena pelo CLI HyperFrames e capturas visuais da página ainda não foram executadas.
+
+
+## Direção visual — Rebranding editorial dark (27/10/2026)
+
+**Estado:** proposta implementada na PR #35; não aprovada visualmente no navegador.
+
+**Referência Inspo:** Burb (`burb-co`, https://burb.co/), captura 27/05/2026. Adaptação de princípios, não cópia: palco escuro, título de forte hierarquia, composição editorial assimétrica, macroestrutura Bento Grid e contraste entre painel de produto e tipografia.
+
+**Direção ELUS 360:** um sistema operacional de vendas com IA supervisionada. A marca mantém o logotipo e mascote oficiais ELUS by Wandora, azuis e violetas próprios, sem adotar como cores da ELUS os tons pêssego/verde da Burb. Não importar Ginto Nord nem Neue Montreal sem licença. Continuar com Plus Jakarta Sans e pesos existentes até decisão tipográfica futura.
+
+**Sistema de página:** hero editorial escuro com mascote e prévia ilustrativa da operação; bento assimétrico com atendimento, agentes, CRM e aprendizado; alternância deliberada de seções dark e claras para ritmo; academia com acesso direto ao curso; formulários existentes e informação comercial verificada preservados.
+
+**Regras:** marcações de valores, dashboards e personagens demonstrativos devem continuar identificados como ilustrativos; preço não será inventado. Redução de movimento, rolagem livre, contraste, interface responsiva e formulários operacionais são critérios de aceite. O CTA `/curso` depende da PR #34 até integração. Nenhum merge ou deploy nesta etapa.
+
+**Origem:** https://inspomcp.dev/screens/burb-co — design system Inspo (macrostructure bento-grid, dark editorial, escala com base de 4 px, contêiner 1708 px como referência não literal).
