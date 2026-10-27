@@ -43,3 +43,21 @@ document.querySelectorAll('.w-card').forEach((card) => {
     animate(art, { scale: 1 }, { duration: 0.32, easing: 'ease-out' });
   });
 });
+const heroPreview = document.querySelector(".hero-preview");
+if (heroPreview && "IntersectionObserver" in window) {
+  let entered = false;
+  let entryAnimation;
+  const setState = (state) => { heroPreview.dataset.motionState = state; };
+  const reduceMotionChange = () => { if (!reduceMotion.matches) return; entryAnimation?.cancel(); setState("concluído"); };
+  reduceMotion.addEventListener?.("change", reduceMotionChange);
+  const heroObserver = new IntersectionObserver((entries) => {
+    if (!entries.some((entry) => entry.isIntersecting) || entered) return;
+    entered = true; heroObserver.disconnect();
+    if (reduceMotion.matches || !heroPreview.animate) { setState("concluído"); return; }
+    setState("transição");
+    entryAnimation = heroPreview.animate([{ opacity: 0.84, transform: "translateY(14px)" }, { opacity: 1, transform: "translateY(0)" }], { duration: 520, easing: "cubic-bezier(.22,1,.36,1)", fill: "both" });
+    entryAnimation.finished.then(() => setState("concluído")).catch(() => {});
+  }, { threshold: 0.18 });
+  if (reduceMotion.matches) setState("concluído");
+  heroObserver.observe(heroPreview);
+}
