@@ -17,7 +17,7 @@ test('export preserva a landing e o formulário comercial', () => {
   assert.match(html, /Demonstração ilustrativa/);
   assert.match(html, /data-motion-state="início"/);
   assert.match(html, /heroPreview\\.animate/);
-  assert.match(html, /prefers-reduced-motion: reduce/);
+  assert.match(html, /prefers-reduced-motion:\\s*reduce/);
   assert.match(html, /id="contato" data-form-anchor="contato-comercial"/);
   assert.match(html, /id="problema"/);
   assert.match(html, /data-problem-step="0"/);
