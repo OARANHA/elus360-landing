@@ -2,7 +2,7 @@
 (()=>{
 const reduceMotion=window.matchMedia("(prefers-reduced-motion: reduce)");
 const heroPreview=document.querySelector(".hero-preview");
-if(!heroPreview||!("IntersectionObserver"in window))return;
+if(!heroPreview)return;if(!("IntersectionObserver"in window)){heroPreview.dataset.motionState="concluído";return}
 let entered=false,entryAnimation;
 const setState=state=>{heroPreview.dataset.motionState=state};
 const onReduceMotionChange=()=>{if(!reduceMotion.matches)return;entryAnimation?.cancel();setState("concluído")};
