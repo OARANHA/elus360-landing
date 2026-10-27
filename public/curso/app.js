@@ -22,7 +22,7 @@
       const figure = target.closest("[data-image-figure]");
       if (figure?.classList.contains("is-missing")) return;
       const src = target.getAttribute("data-zoom") ?? "";
-      if (!/^\/curso\/capturas\/[a-z0-9_-]+_elus\.(jpg|jpeg)$/i.test(src)) return;
+      if (!/^\/curso\/capturas\/[a-z0-9_-]+_elus\.png$/i.test(src)) return;
       dialogImage.src = src;
       dialogImage.alt = target.getAttribute("data-label") ?? "Captura de tela ELUS360";
       dialogLabel.textContent = dialogImage.alt;
