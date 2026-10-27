@@ -20,6 +20,8 @@ const removedSteps = new Set([
   "casos--conversar-sobre-o-caso--p2",
   "casos--conversar-sobre-o-caso--p3",
 ]);
+const hiddenScreenshots = new Set(["agentes--conhecendo-os-agentes--p1","agentes--conhecendo-os-agentes--p2","agentes--conhecendo-os-agentes--p4","agentes--menu-do-cartao--p1","agentes--menu-do-cartao--p2","agentes--menu-do-cartao--p3"]);
+const seenHidden = new Set();
 const paths = new Set();
 const lessonKeys = new Set();
 for (const module of modules) {
@@ -31,6 +33,13 @@ for (const module of modules) {
     lessonKeys.add(lessonKey);
     for (const step of lesson.steps) {
       assert(!removedSteps.has(module.id + "--" + lesson.id + "--" + step.id), "Passo de provedor IA proibido");
+      const imageKey = module.id + "--" + lesson.id + "--" + step.id;
+      if (!step.image) {
+        assert(hiddenScreenshots.has(imageKey), "Imagem vazia sem revisão: " + imageKey);
+        seenHidden.add(imageKey);
+        continue;
+      }
+      assert(!hiddenScreenshots.has(imageKey), "Imagem sensível reapareceu: " + imageKey);
       assert(!paths.has(step.image), "Imagem duplicada " + step.image);
       assert(/^\/curso\/capturas\/[a-z0-9-]+_elus\.png$/i.test(step.image), "Caminho inválido " + step.image);
       paths.add(step.image);
@@ -46,9 +55,10 @@ for (const segment of course.segments) {
     }
   }
 }
-assert.equal(paths.size, 844, "844 imagens aprovadas com sufixo _elus");
+assert.equal(seenHidden.size, 6, "Seis capturas retidas");
+assert.equal(paths.size, 838, "838 imagens aprovadas com sufixo _elus");
 assert(!/\btenants?\b|\/admin\//i.test(JSON.stringify(course)), "Nenhuma referência interna a tenants ou /admin");
 assert(!/<(?:video|iframe)[\s>]/i.test(source), "Aulas sem vídeo ou embeds");
 assert(!/youtube|vimeo/i.test(source), "Sem integração de players");
 assert(!/admin\/|tenants|platform.admin/i.test(source), "Sem área de administração interna");
-console.log("CURSO_ELUS360_CONTRACT_GREEN: módulos=35 aulas=173 jornadas=30 imagens=844 admin=0 vídeos=0");
+console.log("CURSO_ELUS360_CONTRACT_GREEN: módulos=35 aulas=173 jornadas=30 imagens=838 admin=0 vídeos=0");

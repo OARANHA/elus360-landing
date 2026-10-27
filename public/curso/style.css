@@ -116,6 +116,7 @@ a{color:inherit}button,input{font:inherit}button{cursor:pointer}img{max-width:10
 .course-shot.is-missing .shot-window img{display:none}.course-shot.is-missing .shot-missing{display:flex}.course-shot.is-missing .zoom-btn{display:none}
 .course-shot figcaption{display:flex;gap:12px;justify-content:space-between;align-items:center;margin-top:10px;font-size:11px;color:#6f7f99}
 .zoom-btn{font-size:11px;background:transparent;border:0;color:var(--blue);font-weight:800;padding:5px 0;white-space:nowrap}.zoom-btn:hover{text-decoration:underline}
+.image-review-note{margin:20px 0 0;padding:13px 16px;border-radius:10px;background:#eff4ff;color:#415d8c;font-weight:700;font-size:12px;line-height:1.6;max-width:72ch}
 .shot-labels{display:flex;flex-wrap:wrap;gap:7px;list-style:none;margin:13px 0 0;padding:0}.shot-labels li{padding:6px 10px;border-radius:7px;background:#eff4ff;color:#4c6389;font-size:10px;line-height:1.4}
 .bottom-nav{max-width:900px;display:flex;justify-content:space-between;gap:15px;margin-top:34px;padding-top:24px;border-top:1px solid #e7ecf5;flex-wrap:wrap}
 .bottom-nav>a:not(.button){width:min(100%,47%);min-width:220px;display:flex;flex-direction:column;gap:5px;border:1px solid #e2e9f7;border-radius:12px;padding:18px;text-decoration:none;background:#fff}

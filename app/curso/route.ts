@@ -19,6 +19,7 @@ const short = (s: string) => s.trim().toLocaleLowerCase("pt-BR").normalize("NFD"
 const attributes = (s: string) => esc(short(s));
 
 function screenshot(src: string, label: string, notes: string[] = []): string {
+  if (!src) return '<p class="image-review-note" role="note">Captura desta etapa em atualização para refletir a interface atual do ELUS360.</p>';
   if (!imgPath(src)) return "";
   return '<figure class="course-shot" data-image-figure>' +
     '<div class="shot-window"><div class="shot-top"><span></span><span></span><span></span><b>ELUS360 · Demonstração</b></div>' +
