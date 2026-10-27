@@ -10,7 +10,7 @@ type Segment = { id: string; title: string; summary: string; journeys: Journey[]
 const course = curriculum as unknown as { sourceVersion: string; groups: Group[]; segments: Segment[] };
 const modules = course.groups.flatMap((group) => group.modules);
 const allLessons = modules.flatMap((module) => module.lessons.map((lesson) => ({ module, lesson })));
-const imgPath = (value: string) => value.startsWith("/curso/capturas/") && /_elus\.jpe?g$/i.test(value) ? value : "";
+const imgPath = (value: string) => value.startsWith("/curso/capturas/") && /_elus\.png$/i.test(value) ? value : "";
 const esc = (value: unknown): string => String(value ?? "").replace(/[&<>"']/g, (char) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" })[char] ?? char);
 const lessonHref = (module: Module, lesson: Lesson): string => "/curso?m=" + encodeURIComponent(module.id) + "&a=" + encodeURIComponent(lesson.id);
 const moduleHref = (module: Module): string => "/curso?m=" + encodeURIComponent(module.id);
