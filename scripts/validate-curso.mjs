@@ -46,8 +46,9 @@ for (const segment of course.segments) {
     }
   }
 }
-assert.equal(paths.size, 845, "845 imagens aprovadas com sufixo _elus");
+assert.equal(paths.size, 844, "844 imagens aprovadas com sufixo _elus");
+assert(!/\\btenants?\\b|\\/admin\\//i.test(JSON.stringify(course)), "Nenhuma referência interna a tenants ou /admin");
 assert(!/<(?:video|iframe)[\s>]/i.test(source), "Aulas sem vídeo ou embeds");
 assert(!/youtube|vimeo/i.test(source), "Sem integração de players");
 assert(!/admin\/|tenants|platform.admin/i.test(source), "Sem área de administração interna");
-console.log("CURSO_ELUS360_CONTRACT_GREEN: módulos=35 aulas=173 jornadas=30 imagens=845 admin=0 vídeos=0");
+console.log("CURSO_ELUS360_CONTRACT_GREEN: módulos=35 aulas=173 jornadas=30 imagens=844 admin=0 vídeos=0");
