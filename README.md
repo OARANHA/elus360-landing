@@ -8,9 +8,9 @@ Landing page responsiva para apresentar o ELUS360 e captar novos clientes.
 
 ## Implementação atual da landing
 
-A abertura tipográfica editorial atual é preservada sem alterações. A navegação clássica ELUS em azul-meia-noite fica sticky no topo; uma barra fina acompanha o avanço da rolagem até o fim da página. A leitura mantém a identidade azul-gelo, o destaque violeta, Plus Jakarta Sans, logos e mascotes. A direção e o briefing estão registrados em [`scrollcraft/FINGERPRINTS.md`](scrollcraft/FINGERPRINTS.md) e [`scrollcraft/builds/elus360/BRIEF.md`](scrollcraft/builds/elus360/BRIEF.md).
+A hero do ELUS 360 agora combina a headline aprovada, um único botão para solicitar demonstração e uma prévia ilustrativa do fluxo conversa → contexto → próxima ação. O painel usa a identidade azul-noturno, azul e ciano; a animação de entrada é opcional e respeita movimento reduzido. O formulário permanece no CTA comercial.
 
-A sequência existente permanece: início → problema → produto → como funciona → recursos → agentes → diferenciais → para quem → CTA comercial → preços → FAQ → fechamento. O formulário ocupa o CTA comercial; o último capítulo encerra a leitura com um convite contextual. O menu clássico oferece links para Produto, Como funciona, Agentes de IA, Preços e FAQ, além de Entrar e Solicitar demonstração. Recursos apresenta CRM, canais, agentes, automações e auditoria em três etapas conectadas: organizar, atender e evoluir. Os links “Entrar” usam `/login` na aplicação ELUS.
+A sequência existente permanece: início → problema → produto → como funciona → recursos → agentes → diferenciais → para quem → CTA comercial → preços → FAQ → fechamento. A hero direciona ao formulário do CTA comercial, e o último capítulo encerra a leitura com um convite contextual. O menu clássico oferece links para Produto, Como funciona, Agentes de IA, Preços e FAQ, além de Entrar e Solicitar demonstração. Recursos apresenta CRM, canais, agentes, automações e auditoria em três etapas conectadas: organizar, atender e evoluir.
 
 A seção PROBLEMA reúne três cenas verticais 9:16 em um grupo compacto. Cada imagem mantém seu texto legível sobre um degradê escuro e uma arte de atendimento, mascote ou ações. Ao rolar, a etapa em foco muda em ordem; antes da narrativa, as etapas futuras ficam em início; depois, ficam concluídas. Os números selecionam uma etapa, e em telas estreitas levam até ela. O conteúdo não depende de animação, não fica oculto e a rolagem permanece livre. Movimento reduzido elimina transições e rolagem suave. As telas e cenas são identificadas como exemplos fictícios.
 
@@ -23,7 +23,7 @@ Permanecem no projeto:
 - Captura de leads via `POST /api/leads`, persistida em Cloudflare D1.
 - Área `/gestao`, protegida por autenticação ChatGPT e autorização por `SITE_OWNER_EMAIL`.
 - Política de privacidade em `/privacidade`.
-- Projetos editáveis HyperFrames em `motion-office/`, `motion-followup/` e `motion-hero/`.
+- Projetos editáveis HyperFrames em `motion-office/` e `motion-followup/`.
 
 O build e os testes de contrato passaram para esta revisão. O navegador CUA não conseguiu acessar a prévia local (`ERR_CONNECTION_REFUSED`), então a revisão visual local ainda está pendente. O resultado precisa ser conferido em desktop, celular e movimento reduzido após publicação; os testes estáticos não substituem essa revisão.
 
