@@ -32,7 +32,7 @@ for (const module of modules) {
     for (const step of lesson.steps) {
       assert(!removedSteps.has(module.id + "--" + lesson.id + "--" + step.id), "Passo de provedor IA proibido");
       assert(!paths.has(step.image), "Imagem duplicada " + step.image);
-      assert(/^\/curso\/capturas\/[a-z0-9-]+_elus\.jpg$/i.test(step.image), "Caminho inválido " + step.image);
+      assert(/^\/curso\/capturas\/[a-z0-9-]+_elus\.png$/i.test(step.image), "Caminho inválido " + step.image);
       paths.add(step.image);
     }
   }
@@ -41,7 +41,7 @@ for (const segment of course.segments) {
   for (const journey of segment.journeys) {
     for (const scene of journey.scenes) {
       assert(!paths.has(scene.image), "Imagem de jornada duplicada " + scene.image);
-      assert(/^\/curso\/capturas\/[a-z0-9-]+_elus\.jpg$/i.test(scene.image), "Caminho inválido " + scene.image);
+      assert(/^\/curso\/capturas\/[a-z0-9-]+_elus\.png$/i.test(scene.image), "Caminho inválido " + scene.image);
       paths.add(scene.image);
     }
   }
