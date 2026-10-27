@@ -44,7 +44,8 @@ document.querySelectorAll('.w-card').forEach((card) => {
   });
 });
 const heroPreview = document.querySelector(".hero-preview");
-if (heroPreview && "IntersectionObserver" in window) {
+if (heroPreview) {
+  if (!("IntersectionObserver" in window)) { heroPreview.dataset.motionState = "concluído"; } else {
   let entered = false;
   let entryAnimation;
   const setState = (state) => { heroPreview.dataset.motionState = state; };
@@ -60,4 +61,5 @@ if (heroPreview && "IntersectionObserver" in window) {
   }, { threshold: 0.18 });
   if (reduceMotion.matches) setState("concluído");
   heroObserver.observe(heroPreview);
+  }
 }
