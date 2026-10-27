@@ -182,16 +182,16 @@ function simulatorView(module: Module, lesson: Lesson, next?: { module: Module; 
   // Escaping "<" avoids accidentally closing the script element via source text.
   const simData = JSON.stringify({
     key: module.id + "/" + lesson.id,
-    steps: lesson.steps.map(p => ({ title:p.title, text:p.text, tip:p.tip, image:p.image, target:p.target }))
+    steps: lesson.steps.map(p => ({ title:p.title, text:p.text, tip:p.tip, image:p.image, marks:p.marks, target:p.target }))
   }).replace(/</g, "\\u003c").replace(/>/g, "\\u003e").replace(/&/g,"\\u0026");
   return '<section class="course-simulator" data-sim-root aria-label="Simulador da aula">' +
     '<div class="sim-intro"><div><p class="eyebrow">PRÁTICA GUIADA · AMBIENTE DE DEMONSTRAÇÃO</p><h2>Aprenda fazendo, passo a passo.</h2>' +
-    '<p>Encontre os controles na tela e avance pela simulação. Nenhum clique modifica informações do CRM real.</p></div>' +
+    '<p>Siga as mesmas marcações do modo Ler. Observe cada indicação e pratique somente quando ela representar um controle. Nada é alterado no CRM real.</p></div>' +
     '<span class="sim-icon" aria-hidden="true">✦</span></div>' +
     '<div class="sim-progress-top"><span data-sim-count>Preparando a prática</span><span>Somente demonstração</span></div>' +
     '<div class="sim-progress" data-sim-progress role="progressbar" aria-label="Progresso da simulação" aria-valuemin="0" aria-valuemax="' + lesson.steps.length + '" aria-valuenow="0"><span data-sim-progress-bar></span></div>' +
     '<div class="sim-stage" data-sim-image aria-label="Tela interativa de treinamento"></div>' +
-    '<div class="sim-panel"><p class="eyebrow">O PRÓXIMO PASSO</p><h3 data-sim-title>Carregando etapa...</h3>' +
+    '<div class="sim-panel"><p class="eyebrow">SUA ORIENTAÇÃO</p><h3 data-sim-title>Carregando etapa...</h3>' +
     '<p data-sim-text>O exercício ficará disponível quando a página carregar.</p><aside class="sim-tip" data-sim-tip hidden></aside>' +
     '<p class="sim-instruction" data-sim-prompt></p><p class="sim-feedback" role="status" aria-live="polite" aria-atomic="true" data-sim-feedback></p>' +
     '<div class="sim-controls"><button type="button" class="sim-btn sim-btn-subtle" data-sim-action="back" disabled>← Voltar</button>' +
