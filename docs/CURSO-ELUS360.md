@@ -4,7 +4,7 @@
 - Rota isolada **/curso**, implementada em app/curso/route.ts, preservando a landing comercial.
 - Currículo público: **35 módulos e 173 aulas**, incluindo textos didáticos e capturas.
 - Jornadas: **10 segmentos, 30 jornadas e 120 cenas** fictícias.
-- **844 imagens** referenciadas com sufixo _elus.jpg no caminho /curso/capturas/.
+- **844 imagens** referenciadas com sufixo _elus.png no caminho /curso/capturas/.
 - **20 módulos internos Admin** excluídos integralmente (63 aulas); **6 módulos avançados** fora da versão pública (23 aulas); **6 passos** de gestão de provedor/LLM retirados.
 - Somente texto e imagens. Nenhum player de vídeo e nenhuma integração YouTube/Vimeo.
 
@@ -15,15 +15,15 @@
 - public/curso/app.js — busca progressiva de aulas, lightbox, progresso local sem backend.
 - scripts/validate-curso.mjs — checagens de limites, contagens, caminhos e ausência de vídeo.
 
-## Imagens — entrega pendente
+## Imagens — integração verificada
 
 O inventário público aprovado tinha 845 capturas. Uma captura adicional foi retirada após detectar conteúdo interno de LGPD referente à exclusão de tenants. A integração contém agora 844 referências. O mapeamento original permanece disponível para auditoria, mas não deve ser publicado sem esse filtro adicional.
-As imagens _elus **não foram recebidas nem incluídas nesta PR**. Colocar as capturas autorizadas em public/curso/capturas/ preservando os nomes:
+O proprietário enviou 961 capturas PNG à branch via GitHub Desktop. Em auditoria do tree GitHub, todas as 844 imagens utilizadas pelo currículo público foram encontradas e os nomes coincidem exatamente. Há ainda 117 PNGs fora da seleção pública (integrações avançadas e passos revisados), além de .gitkeep. Não são referenciados pela página do curso, mas arquivos em public são diretamente acessíveis por URL; revisar antes de merge se devem permanecer no pacote público. O lote efetivo do curso usa os nomes:
 - Original: inbox--conhecendo-a-tela--p1.jpg
-- Substituto: inbox--conhecendo-a-tela--p1_elus.jpg
-- URL final: /curso/capturas/inbox--conhecendo-a-tela--p1_elus.jpg
+- Substituto: inbox--conhecendo-a-tela--p1_elus.png
+- URL final: /curso/capturas/inbox--conhecendo-a-tela--p1_elus.png
 
-Quando ausentes, um aviso legível substitui a captura e os textos da aula continuam disponíveis. A validação atesta mapeamento de caminhos, não arquivos físicos presentes no site. Armazenar em R2 é alternativa para lote volumoso, mas exigiria ajustar o caminho sob autorização posterior.
+Quando ausentes, um aviso legível substitui a captura e os textos da aula continuam disponíveis. A auditoria GitHub em 27/10/2026 verificou os nomes dos arquivos físicos existentes na branch e comparou os 844 caminhos usados no curso. Ainda resta conferir conteúdo visual, exposição indevida e testes de build em navegador. Armazenar em R2 é alternativa para lote volumoso, mas exigiria ajustar o caminho sob autorização posterior.
 
 ## Navegação
 - /curso — hero do curso gratuito, catálogo de módulos, 30 jornadas de exemplo, FAQ, CTA.
