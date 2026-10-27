@@ -12,17 +12,6 @@ test('export preserva a landing e o formulário comercial', () => {
   assert.match(html, /<section\b(?=[^>]*\bid="inicio")(?=[^>]*\bclass="[^"]*\bhero\b)[^>]*>/);
   assert.doesNotMatch(html, /<div class="office-actors"/);
   assert.match(html, /id="problema"/);
-  assert.match(html, /data-problem-step="0"/);
-  assert.match(html, /data-problem-step="1"/);
-  assert.match(html, /data-problem-step="2"/);
-  assert.match(html, /data-state="início"/);
-  assert.match(html, /state==='ativo'/);
-  assert.match(html, /state==='concluído'/);
-  assert.match(html, /src="\/brand\/problem-stage-inquiry\.webp"/);
-  assert.match(html, /src="\/brand\/problem-stage-context\.webp"/);
-  assert.match(html, /src="\/brand\/problem-stage-next-step\.webp"/);
-  assert.match(html, /src="\/brand\/followup-lead\.webp"/);
-  assert.match(html, /src="\/brand\/followup-mascot\.webp"/);
   assert.match(html, /src="\/brand\/followup-actions\.webp"/);
   assert.match(html, /prefers-reduced-motion:reduce/);
   assert.doesNotMatch(html, /id="followupStory"/);
@@ -36,108 +25,17 @@ test('export preserva a landing e o formulário comercial', () => {
   assert.match(html, /id="leadForm"/);
 });
 
-test('a narrativa de problema usa três imagens compactas sem markup antigo sobrando', () => {
+test('seção problema apresenta três painéis editoriais acessíveis com movimento opcional', () => {
   const html = readFileSync('standalone-dist/index.html', 'utf8');
-  const section = html.match(/<section\b(?=[^>]*\bid="problema")(?=[^>]*\bclass="[^"]*\bproblem-story-section\b)[^>]*>[\s\S]*?<\/section>/)?.[0];
-  assert.ok(section, 'Seção Problema ausente ou sem fechamento');
-  assert.equal((section.match(/<li class="problem-step/g) || []).length, 3);
-  assert.equal((section.match(/<figure class="problem-step-visual"/g) || []).length, 3);
-  assert.equal((section.match(/class="problem-step-photo"/g) || []).length, 3);
-  assert.equal((section.match(/class="problem-step-art(?: problem-step-art--mascot)?"/g) || []).length, 3);
-  assert.match(html, /\.problem-story-section \.problem-container\{[^}]*max-width:1000px[^}]*padding-inline:0/);
-  assert.match(html, /grid-template-columns:repeat\(3,minmax\(0,290px\)\);justify-content:center;[^}]*gap:14px/);
-  assert.match(html, /\.problem-step-visual\{[^}]*aspect-ratio:9\/16/);
-  assert.match(html, /@media\(prefers-reduced-motion:reduce\)[\s\S]*?\.problem-step/);
-  assert.match(section, /aria-label="Narrativa em três etapas; todos os textos permanecem visíveis"/);
-  assert.match(section, /class="problem-story-toolbar"/);
-  assert.match(section, /Role para percorrer as etapas; use os números para selecionar uma diretamente/);
-  assert.match(section, /aria-label="Selecionar etapa 2: As pontas se conectam"/);
-  assert.match(section, /As cenas e telas são ilustrativas e fictícias/);
-  assert.doesNotMatch(section, /cinestory|data-story-tab|followupMotionToggle|aria-hidden="true"[^>]*>[^<]*(?:O interesse|As pontas|próximo passo)/i);
-  assert.doesNotMatch(html.slice(html.indexOf('id="problema"'), html.indexOf('id="agentes"')), /id="cinestoryPanel|class="cinestory-art|class="cinestory-footer/);
-  assert.match(html, /window\.addEventListener\('resize',schedulePositionUpdate\)/);
-  assert.match(html, /Math\.floor\(progress\*3\)/);
-  assert.match(html, /window\.addEventListener\('scroll',schedulePositionUpdate/);
-});
-
-test('a etapa ativa acompanha a rolagem nos dois sentidos, redimensionamento e movimento reduzido', () => {
-  const html = readFileSync('standalone-dist/index.html', 'utf8');
-  const script = html.match(/<script>\s*\(function\(\)\{\s*var root=document\.querySelector\('#problemStory \.problem-story-steps'\)[\s\S]*?<\/script>/)?.[0];
-  assert.ok(script, 'Controlador de rolagem da narrativa ausente');
-  const listeners = {};
-  let pendingFrame;
-  const stateLabels = [];
-  const stateNodes = [0, 1, 2].map((i) => ({ set textContent(value) { stateLabels[i] = value; } }));
-  const steps = [0, 1, 2].map((i) => ({
-    dataset: {},
-    attributes: {},
-    classList: { toggle() {} },
-    getAttribute(name) { return name === 'data-problem-step' ? String(i) : null; },
-    querySelector() { return stateNodes[i]; },
-    setAttribute(name, value) { this.attributes[name] = value; },
-    removeAttribute(name) { delete this.attributes[name]; },
-    scrollIntoView(options) { this.lastScroll = options; },
-  }));
-  const buttons = [0, 1, 2].map((i) => ({
-    attributes: {},
-    addEventListener(name, callback) { this.listeners ||= {}; this.listeners[name] = callback; },
-    setAttribute(name, value) { this.attributes[name] = value; },
-    removeAttribute(name) { delete this.attributes[name]; },
-    getAttribute(name) { return name === 'data-problem-go' ? String(i) : null; },
-  }));
-  const next = { addEventListener(name, callback) { this.listeners ||= {}; this.listeners[name] = callback; } };
-  const controls = { hidden: true, querySelectorAll() { return buttons; }, querySelector() { return next; } };
-  const rootRect = { top: 100, bottom: 1720, height: 1620 };
-  const root = { querySelectorAll() { return steps; }, getBoundingClientRect() { return rootRect; }, dispatchEvent() {} };
-  const status = { hidden: true, textContent: '' };
-  const hint = { hidden: true };
-  const reduced = { matches: false, addEventListener() {} };
-  const window = {
-    innerHeight: 800,
-    innerWidth: 1280,
-    matchMedia(query) { return query.includes('max-width') ? { matches: this.innerWidth <= 760 } : reduced; },
-    addEventListener(name, callback) { listeners[name] = callback; },
-    requestAnimationFrame(callback) { pendingFrame = callback; return 1; },
-    CustomEvent: class CustomEvent { constructor(type, options) { this.type = type; this.detail = options.detail; } },
-  };
-  const document = {
-    getElementById(id) { return id === 'problemStoryStatus' ? status : id === 'problemStoryHint' ? hint : null; },
-    querySelector(selector) { return selector === '.problem-story-controls' ? controls : selector === '#problemStory .problem-story-steps' ? root : null; },
-    querySelectorAll() { return []; },
-  };
-  const source = script.replace(/^<script>|<\/script>$/g, '');
-  new VmScript(source).runInNewContext({ document, window, CustomEvent: window.CustomEvent });
-  const flush = (event) => { listeners[event](); pendingFrame?.(); pendingFrame = null; };
-  const states = () => steps.map((step) => step.dataset.state);
-  assert.deepEqual(states(), ['ativo', 'início', 'início']);
-  rootRect.top = -500; rootRect.bottom = 1120;
-  flush('scroll');
-  assert.deepEqual(states(), ['concluído', 'ativo', 'início']);
-  rootRect.top = -1100; rootRect.bottom = 520;
-  flush('scroll');
-  assert.deepEqual(states(), ['concluído', 'concluído', 'ativo']);
-  rootRect.top = -500; rootRect.bottom = 1120;
-  flush('scroll');
-  assert.deepEqual(states(), ['concluído', 'ativo', 'início']);
-  window.innerHeight = 1000;
-  rootRect.top = -400; rootRect.bottom = 1220;
-  flush('resize');
-  assert.deepEqual(states(), ['concluído', 'ativo', 'início']);
-  window.innerWidth = 390;
-  reduced.matches = true;
-  buttons[2].listeners.click();
-  assert.equal(steps[2].lastScroll.behavior, 'auto');
-  assert.deepEqual(states(), ['concluído', 'concluído', 'ativo']);
-  rootRect.top = -1800; rootRect.bottom = -180;
-  flush('scroll');
-  assert.deepEqual(states(), ['concluído', 'concluído', 'concluído']);
-  assert.match(status.textContent, /Narrativa concluída/);
-  rootRect.top = 1001; rootRect.bottom = 2621;
-  flush('scroll');
-  assert.deepEqual(states(), ['ativo', 'início', 'início']);
-  assert.equal(controls.hidden, false);
-  assert.equal(hint.hidden, false);
-  assert.equal(status.hidden, false);
+  const section = html.match(/<section class="loss-section" id="problema"[\s\S]*?<\/section>/)?.[0];
+  assert.ok(section);
+  assert.match(section, /É aqui que a venda/);
+  assert.equal((section.match(/<li class="loss-card"/g) || []).length, 3);
+  for (const title of ['O interesse aparece.', 'O contexto se perde.', 'O acompanhamento falha.']) assert.ok(section.includes(title));
+  assert.match(section, /Cenários ilustrativos/);
+  assert.match(html, /@media\(max-width:700px\)\{\.loss-heading/);
+  assert.match(html, /@media\(prefers-reduced-motion:reduce\)\{\.loss-section/);
+  assert.doesNotMatch(html, /src="\/brand\/problem-motion\.js"/);
 });
 
 test('cada cartão de Para quem é contém sua própria arte e ícone', () => {
@@ -346,19 +244,6 @@ test('as três cenas seguem a rolagem e os controles permanecem acessíveis', ()
   assert.match(source, /prefers-reduced-motion/);
   assert.match(source, /ArrowRight/);
   assert.doesNotMatch(source, /gsap|setInterval/);
-});
-
-test('a mudança da etapa usa Motion de forma sutil e respeita movimento reduzido', () => {
-  const html = readFileSync('standalone-dist/index.html', 'utf8');
-  const source = readFileSync('scripts/problem-motion.mjs', 'utf8');
-  assert.match(html, /src="\/brand\/problem-motion\.js"/);
-  assert.match(source, /from 'motion\/mini'/);
-  assert.match(source, /prefers-reduced-motion: reduce/);
-  assert.match(source, /elus:problem-step/);
-  assert.match(source, /if \(reduced\.matches\) return/);
-  const bundle = readFileSync('public/brand/problem-motion.js', 'utf8');
-  new VmScript(bundle);
-  assert.ok(bundle.length > 3000);
 });
 
 test('Recursos preserva as capacidades e usa Motion com adaptação de layout', () => {
