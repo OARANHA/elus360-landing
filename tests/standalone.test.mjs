@@ -416,3 +416,21 @@ test('Agentes mantém mascote e fluxo horizontal com linhas vivas e leitura aces
   assert.match(source, /elus:learning-step/);
   new VmScript(readFileSync('public/brand/agents-motion.js', 'utf8'));
 });
+
+
+test('rebranding editorial mantém percurso comercial, bento e academia', () => {
+  const html = readFileSync('standalone-dist/index.html', 'utf8');
+  assert.match(html, /id="heroTitle">O comercial inteiro/);
+  assert.match(html, /id="plataforma-em-acao"/);
+  assert.match(html, /class="brand-bento-grid"/);
+  assert.equal((html.match(/<article class="brand-tile /g) || []).length, 4);
+  assert.match(html, /id="academia"/);
+  assert.match(html, /href="\/curso"/);
+  assert.match(html, /href="#academia">Academia<\/a>/);
+  assert.match(html, /id="heroLeadForm"/);
+  assert.match(html, /action="[^"]*"|data-lead-form/);
+  assert.match(html, /href="\/privacidade"/);
+  assert.match(html, /prefers-reduced-motion:reduce/);
+  assert.match(html, /@media\(max-width:390px\)/);
+  assert.match(html, /Exemplo ilustrativo/);
+});
