@@ -44,7 +44,7 @@ function navigation(currentModule?: Module, currentLesson?: Lesson): string {
           '<a href="' + lessonHref(module, lesson) + '" ' + (module.id === currentModule?.id && lesson.id === currentLesson?.id ? 'aria-current="page"' : "") +
           '><span class="done-dot" data-done-for="' + esc(module.id + "/" + lesson.id) + '" aria-hidden="true"></span>' +
           '<span>' + esc(lesson.title) + '</span></a></li>').join("") + '</ul></details>').join("") +
-    '</section>').join("") + '</nav></aside>';
+    '</section>').join("") + '</nav><a class="mobile-back-to-lesson" href="#conteudo">↑ Voltar à leitura</a></aside>';
 }
 
 function modulesCatalog(): string {
@@ -153,6 +153,7 @@ function render(request: Request): string {
     '<nav class="header-links" aria-label="Menu principal"><a href="/curso" ' + (!current ? 'aria-current="page"' : "") + '>O curso</a><a href="/curso#grade">Módulos</a><a href="/curso#jornadas">Exemplos</a></nav>' +
     '<div class="header-actions"><a class="header-login" href="https://elus.wandora.com.br/login">Entrar</a><a class="button header-contact" href="/#contato">Falar com a ELUS360 <span aria-hidden="true">↗</span></a></div></div></header>' +
     '<div class="' + (current ? "reading-shell" : "home-shell") + '"><main id="conteudo" class="course-main">' +
+    (current ? '<a class="mobile-course-index" href="#ementa">Índice de módulos e aulas <span aria-hidden="true">↓</span></a>' : '') +
     (lesson && module ? lessonView(module, lesson) : module ? moduleView(module) : journey && segment ? journeyView(segment, journey) : catalogView()) +
     (current ? bottomCta() : bottomCta()) + '</main>' +
     (current ? navigation(module, lesson) : "") + '</div>' +
