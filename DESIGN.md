@@ -118,13 +118,13 @@ components:
 
 Este documento registra a implementação em `lib/landing.ts`, incluindo a cascata final de refinamentos comerciais. É uma extração do sistema existente, não uma aprovação de uma nova direção estética ou de uma metáfora criativa.
 
-A identidade usa o logo oficial branco ELUS by Wandora: versão horizontal na navegação e vertical no rodapé. A navegação conserva o azul meia-noite; o hero usa uma composição responsiva do escritório em tela inteira, escurecido por gradiente azul da esquerda para a direita, com título branco e destaque ciano. O formulário permanece branco. As seções inferiores conservam suas superfícies claras, detalhes violetas e cores de estado. O mascote de referência foi recolorido com ImageGen em azul, ciano, violeta e magenta, com transparência alfa nativa.
+A identidade usa o logo oficial branco ELUS by Wandora: versão horizontal na navegação e vertical no rodapé. A navegação conserva o azul meia-noite; a hero combina título branco com destaque ciano e uma prévia ampla e ilustrativa do fluxo comercial. O CTA principal azul leva ao formulário existente na seção comercial. As seções inferiores conservam suas superfícies claras, detalhes violetas e cores de estado. O mascote recolorido permanece disponível nas seções que já o utilizam.
 
 **Key Characteristics:**
 
 - Hero e navegação azul meia-noite com marca oficial branca e destaque ciano.
-- Escritório arquitetônico desenhado que se materializa em cena realista por traços locais, sem máscara de cortina; equipe humana ilustrada e dois mascotes ELUS.
-- Mascote no primeiro plano e mascotes adicionais inseridos como colaboradores da equipe no escritório.
+- Hero com mensagem comercial à esquerda e painel ilustrativo de produto à direita, empilhados em telas estreitas.
+- Uma captura comercial no CTA da página; a hero não duplica a coleta de dados.
 - Títulos compactos, botões em cápsula e cartões suavemente arredondados.
 - Exemplos de interface com mais densidade que o conteúdo comercial.
 
@@ -146,23 +146,23 @@ Branco sustenta os cartões. Azul meia-noite organiza hero e navegação; azul-g
 
 **Display Font / Body Font:** Plus Jakarta Sans, com fallback de sistema. A mesma família liga conteúdo e interface. Títulos usam peso alto e espaçamento de letras negativo; corpo e controles mantêm leitura simples.
 
-A hierarquia normativa está no frontmatter. O título do hero tem largura máxima de 15 caracteres. Em 1100px usa clamp(3rem,5.4vw,4.2rem); em 800px, clamp(3rem,7.4vw,4.7rem); em 480px, clamp(2.45rem,10.6vw,3.2rem), máximo de 14 caracteres e entrelinha 1.08. Em telas a partir de 1800px usa 5.9rem. O subtítulo usa clamp(15px,1.12vw,19px), entrelinha 1.75 e máximo de 54 caracteres, reduzindo a 14px em 480px. Títulos de seção usam a escala headline; cartões variam de 15.5px a 17.5px e pesos 700–800. Campos usam 14.5px; consentimento usa 11px e entrelinha 1.6.
+A hierarquia normativa está no frontmatter. O título da hero usa `clamp(2.8rem,4.4vw,4.5rem)` em desktop e `clamp(2.45rem,11vw,3.3rem)` em telas estreitas, com largura de leitura de até 12 caracteres. O subtítulo usa escala fluida, máximo aproximado de 47 caracteres e entrelinha 1.7–1.78. O conteúdo do painel mantém rótulos legíveis e reduz densidade de navegação no celular, em vez de comprimir o texto de desktop.
 
 ## Layout
 
 O contêiner global é fluido: largura de 100%, sem max-width e gutters de clamp(20px,4.5vw,96px), fixados em 20px até 480px. Essa alteração vale também para as seções inferiores, que preservam suas cores e componentes claros.
 
-O hero ocupa no mínimo 100svh no desktop, com padding de 132px 0 58px. A grade tem altura mínima de calc(100svh - 190px), colunas minmax(0,1fr) / minmax(340px,420px) e gap de clamp(40px,8vw,180px). Em 1100px, o formulário usa coluna de 320–370px e gap de 35px. Em 800px, a grade empilha com gap de 28px, sem altura mínima; texto e formulário têm máximo de 640px. Em 480px, o hero usa padding de 112px 0 64px. Em 1800px, a coluna do formulário tem 450px.
+A hero usa padding fluido de 126–176px no topo e 72–104px na base. Em desktop, a grade divide o espaço em duas colunas com proporção aproximada de 0,78 / 1,22 e intervalo fluido de 36–76px. A partir de 960px, texto e prévia empilham; abaixo de 600px, o painel usa navegação horizontal e conteúdo vertical, sem altura fixa ou rolagem presa.
 
-O cenário ocupa todo o hero com imagens sobrepostas em object-fit:cover; o realismo surge por mudanças simultâneas de nitidez/opacidade e traços desenhados sem varredura horizontal. O mascote fica no primeiro plano na assinatura, com largura fluida de 126–196px, 130px em 1100px/800px e 108px em 480px. O formulário ocupa sua coluna inteira; padding de 34px 30px, 28px 24px em 1100px, 28px 22px em 480px e 40px 34px em 1800px.
+O painel de produto ocupa a coluna visual principal, com barra de marca, navegação ilustrativa e sequência conversa → contexto → próxima ação. O conteúdo é explicitamente marcado como ilustrativo/fictício e permanece visível sem JavaScript. Uma única entrada sutil é acionada quando a prévia alcança a viewport; a animação não muda o conteúdo nem bloqueia a rolagem. Movimento reduzido conclui o estado diretamente.
 
 Em 1080px, recursos passam de quatro para duas colunas; produto e agentes ficam em uma coluna. Em 960px, navegação vira menu móvel, fluxo fica vertical e grades de diferenciais/públicos passam a duas colunas. A seção Problema mantém três imagens em até 760px; abaixo desse limite, as cenas empilham na ordem de leitura. Em 640px, essas grades, recursos e rodapé ficam em uma coluna; sidebar ilustrativa e chat flutuante desaparecem. Seções usam o ritmo do frontmatter; cabeçalhos de seção têm máximo de 720px, FAQ de 760px e timeline de 780px.
 
 ## Elevation & Depth
 
-A profundidade combina superfícies tonais, bordas suaves e sombras. O formulário no hero usa `0 22px 60px #03102555`; a sombra de formulário anterior permanece registrada como definição base. Cartões usam a sombra pequena; mockup usa a grande. Hover de cartões eleva de 4px a 5px. Os valores compartilhados estão na extensão do sidecar.
+A profundidade combina superfícies tonais, bordas suaves e sombras. A prévia da hero usa uma sombra ampla sobre o fundo noturno; cartões de conteúdo usam a sombra pequena e mockups de seções usam a grande. Hover de cartões eleva de 4px a 5px. Os valores compartilhados estão na extensão do sidecar.
 
-A navegação fixa mantém o fundo meia-noite após rolagem, sem blur, com borda azul escura. A landing usa animações CSS de 16 segundos para o escritório. A seção Problema usa imagens estáticas e atualiza o foco conforme a rolagem; os arquivos HyperFrames editáveis do escritório e de acompanhamento permanecem em `motion-office` e `motion-followup` (sem MP4 novo nem check CLI verificado). O controle de pausar/retomar fica no canto inferior direito (18px da base; gutter fluido à direita). Pausa da animação fora da viewport e quando a aba está oculta; preferência por movimento reduzido mostra a fotografia realista junto com a equipe ilustrada, sem animação. Não há dependência de reprodução de vídeo. O gradiente CSS independente do vídeo garante contraste para o conteúdo. A animação flutuante permanece em outras ilustrações. A regra final de movimento reduzido desliga animações, transições e rolagem suave. Elementos de reveal permanecem visíveis na implementação final.
+A navegação fixa mantém o fundo meia-noite após rolagem, sem blur, com borda azul escura. A hero não contém movimento contínuo; a prévia recebe uma entrada única e retorna aos estados estático/final. A seção Problema usa imagens estáticas e atualiza o foco conforme a rolagem; seus textos permanecem visíveis e movimento reduzido elimina transições e rolagem suave. As animações de outras ilustrações preservam seus controles de pausa quando aplicável.
 
 ## Shapes
 
@@ -190,13 +190,13 @@ Campos têm borda clara, ícones à esquerda e placeholder com contraste reforç
 
 Barra sticky de 76px, logo horizontal oficial com altura automática e marcador 360, links claros de peso 600 e ciano no hover. A revisão atual usa o logo com 134px e os destinos Produto, Como funciona, Agentes de IA, Preços e FAQ, além de Entrar e Solicitar demonstração. O menu móvel azul escuro se abre abaixo da barra e acompanha `aria-expanded`; o controle móvel tem área de 46px. Uma barra superior fina acompanha o progresso de rolagem e some com movimento reduzido.
 
-### Marca e filme do hero
+### Marca e painel de produto da hero
 
-Preservar proporção e transparência das marcas oficiais. O rodapé usa a versão vertical, com largura de 150px, reduzida a 130px em mobile. O mascote recolorido mantém alfa nativa e aparece como assinatura estática, sem substituir o filme de escritório.
+Preservar proporção e transparência das marcas oficiais. O rodapé usa a versão vertical, com largura de 150px, reduzida a 130px em mobile. O painel da hero apresenta uma simulação editorial da interface; não reproduz um estado conectado ao backend.
 
-A camada `.office-gradient` usa `linear-gradient(90deg,rgba(4,16,38,.97) 0%,rgba(5,22,47,.94) 25%,rgba(9,35,67,.55) 60%,rgba(12,35,58,.29) 100%)`. Até 800px passa para gradiente mais denso sobre a equipe, conforme o bloco final em `lib/landing.ts`.
+Os assets e arquivos de movimento do escritório continuam no repositório para os projetos que os utilizam; eles não fazem parte da composição da hero atual.
 
-A cena usa as imagens institucionais de traço e realista em 1600×900 e uma equipe ilustrada em SVG; adapta composição e gradiente abaixo de 800px. O controle de movimento tem texto acessível, estado pressionado e foco visível; pausa também os personagens, traços e transição fotográfica. A preferência por movimento reduzido oculta vídeo e controle e apresenta o poster. A variante ghost do hero permanece transparente com borda azul escura e texto claro; o CTA principal continua azul.
+O painel usa componentes HTML editáveis, sem imagem achatada da interface. O status do movimento é `início` → `transição` → `concluído`; a mudança só afeta a entrada visual e não controla a legibilidade. Em movimento reduzido, a prévia aparece diretamente no estado final. O CTA aponta ao único formulário comercial existente.
 
 ### FAQ
 
@@ -219,6 +219,6 @@ Perguntas são botões de largura integral em cartões de curva média. Uma resp
 
 ## Evolução visual — 23/10/2026
 
-- **Hero:** traços arquitetônicos são desenhados em regiões distribuídas; a fotografia ganha nitidez e saturação; três colaboradores humanos em SVG e dois mascotes ELUS surgem progressivamente. O sentido de revelação não depende da posição horizontal. As figuras são ilustrações comerciais, não fotografias de pessoas reais.
+- **Hero:** a composição de escritório e o formulário duplicado foram substituídos por uma prévia ilustrativa do fluxo comercial e um CTA único para o formulário existente.
 - **Problema/acompanhamento:** três cenas verticais com texto sobre imagem e artes ELUS existentes. A rolagem natural atualiza o foco e os estados início, ativo e concluído; a navegação numerada seleciona cada etapa. Nenhum conteúdo é ocultado; telas estreitas empilham os quadros e movimento reduzido remove transições e rolagem suave.
 - **Projetos HyperFrames:** fontes correspondentes em `motion-office/` e `motion-followup/`; a landing utiliza a animação no próprio DOM para fluidez e carregamento mais leve. A renderização da nova cena pelo CLI HyperFrames e capturas visuais da página ainda não foram executadas.
