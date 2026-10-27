@@ -238,3 +238,13 @@ a{color:inherit}button,input{font:inherit}button{cursor:pointer}img{max-width:10
 }
 
 @media(prefers-reduced-motion:reduce){html{scroll-behavior:auto}*,*::before,*::after{transition:none!important;animation:none!important;transform:none!important}}
+
+
+/* Modo Simular: usa a geometria e a ordem das marcações do modo Ler. */
+.sim-guided-region{position:absolute;z-index:2;border:3px solid #a02ac7;border-radius:7px;box-shadow:0 0 0 9999px rgba(10,22,48,.12);pointer-events:none}
+.sim-guided-badge{position:absolute;z-index:4;display:grid;place-items:center;min-width:30px;height:30px;padding:0 7px;transform:translate(-50%,-50%);border-radius:50%;background:#8a21b5;border:2px solid white;color:white;font-size:13px;font-weight:800;pointer-events:none}
+.sim-guided-hit{position:absolute;z-index:3;min-width:18px;min-height:18px;border:0;border-radius:7px;background:transparent;cursor:pointer}
+.sim-guided-hit:hover,.sim-guided-hit:focus-visible{outline:3px solid #8a21b5;outline-offset:2px;background:rgba(156,46,205,.12)}
+.sim-guided-hit.sim-hit-correct{outline:3px solid #119c6a;outline-offset:2px;background:rgba(21,150,99,.18)}
+@media(max-width:700px){.sim-guided-badge{min-width:23px;height:23px;font-size:11px}}
+@media(prefers-reduced-motion:reduce){.sim-guided-badge{transform:translate(-50%,-50%)!important}}
