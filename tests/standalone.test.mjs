@@ -11,6 +11,14 @@ test('export preserva a landing e o formulário comercial', () => {
   assert.match(html, /https:\/\/elus\.wandora\.com\.br\/login/);
   assert.match(html, /<section\b(?=[^>]*\bid="inicio")(?=[^>]*\bclass="[^"]*\bhero\b)[^>]*>/);
   assert.doesNotMatch(html, /<div class="office-actors"/);
+  assert.equal((html.match(/<form\\b[^>]*data-lead-form/g) || []).length, 1);
+  assert.match(html, /href="#contato">Solicitar demonstração/);
+  assert.match(html, /class="hero-preview"/);
+  assert.match(html, /Demonstração ilustrativa/);
+  assert.match(html, /data-motion-state="início"/);
+  assert.match(html, /heroPreview\\.animate/);
+  assert.match(html, /prefers-reduced-motion: reduce/);
+  assert.match(html, /id="contato" data-form-anchor="contato-comercial"/);
   assert.match(html, /id="problema"/);
   assert.match(html, /data-problem-step="0"/);
   assert.match(html, /data-problem-step="1"/);
