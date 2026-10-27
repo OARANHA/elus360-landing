@@ -305,7 +305,7 @@ test('Agentes mantém mascote e fluxo horizontal com linhas vivas e leitura aces
 
 test('rebranding editorial mantém percurso comercial, bento e academia', () => {
   const html = readFileSync('standalone-dist/index.html', 'utf8');
-  assert.match(html, /id="heroTitle">O comercial inteiro/);
+  assert.match(html, /id="heroTitle">Sua operação comercial\./);
   assert.match(html, /id="plataforma-em-acao"/);
   assert.match(html, /class="brand-bento-grid"/);
   assert.equal((html.match(/<article class="brand-tile /g) || []).length, 4);
