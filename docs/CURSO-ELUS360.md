@@ -18,7 +18,7 @@
 ## Imagens — integração verificada
 
 O inventário público aprovado tinha 845 capturas. Uma captura adicional foi retirada após detectar conteúdo interno de LGPD referente à exclusão de tenants. A integração contém agora 844 referências. O mapeamento original permanece disponível para auditoria, mas não deve ser publicado sem esse filtro adicional.
-O proprietário enviou 961 capturas PNG à branch via GitHub Desktop. Em auditoria do tree GitHub, todas as 844 imagens utilizadas pelo currículo público foram encontradas e os nomes coincidem exatamente. Há ainda 117 PNGs fora da seleção pública (integrações avançadas e passos revisados), além de .gitkeep. Não são referenciados pela página do curso, mas arquivos em public são diretamente acessíveis por URL; revisar antes de merge se devem permanecer no pacote público. O lote efetivo do curso usa os nomes:
+O proprietário enviou 961 capturas PNG à branch via GitHub Desktop. Em auditoria do tree GitHub, todas as 844 imagens utilizadas pelo currículo público foram encontradas e os nomes coincidem exatamente. As 117 capturas fora da seleção pública (integrações avançadas e passos revisados) foram removidas da árvore atual da branch em commit de limpeza de 27/10/2026, sem afetar as 844 imagens em uso. O arquivo .gitkeep foi preservado. Imagens retiradas continuam recuperáveis no histórico anterior do Git enquanto ele existir; não tratar limpeza da branch como apagamento irrecuperável. O lote efetivo do curso usa os nomes:
 - Original: inbox--conhecendo-a-tela--p1.jpg
 - Substituto: inbox--conhecendo-a-tela--p1_elus.png
 - URL final: /curso/capturas/inbox--conhecendo-a-tela--p1_elus.png
