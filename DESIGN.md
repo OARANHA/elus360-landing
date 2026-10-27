@@ -194,7 +194,7 @@ Barra sticky de 76px, logo horizontal oficial com altura automática e marcador 
 
 Preservar proporção e transparência das marcas oficiais. O rodapé usa a versão vertical, com largura de 150px, reduzida a 130px em mobile. O painel da hero apresenta uma simulação editorial da interface; não reproduz um estado conectado ao backend.
 
-A camada `.office-gradient` usa `linear-gradient(90deg,rgba(4,16,38,.97) 0%,rgba(5,22,47,.94) 25%,rgba(9,35,67,.55) 60%,rgba(12,35,58,.29) 100%)`. Até 800px passa para gradiente mais denso sobre a equipe, conforme o bloco final em `lib/landing.ts`.
+Os assets e arquivos de movimento do escritório continuam no repositório para os projetos que os utilizam; eles não fazem parte da composição da hero atual.
 
 O painel usa componentes HTML editáveis, sem imagem achatada da interface. O status do movimento é `início` → `transição` → `concluído`; a mudança só afeta a entrada visual e não controla a legibilidade. Em movimento reduzido, a prévia aparece diretamente no estado final. O CTA aponta ao único formulário comercial existente.
 
