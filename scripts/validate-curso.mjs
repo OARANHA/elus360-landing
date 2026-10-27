@@ -47,7 +47,7 @@ for (const segment of course.segments) {
   }
 }
 assert.equal(paths.size, 844, "844 imagens aprovadas com sufixo _elus");
-assert(!/\\btenants?\\b|\\/admin\\//i.test(JSON.stringify(course)), "Nenhuma referência interna a tenants ou /admin");
+assert(!/\btenants?\b|\/admin\//i.test(JSON.stringify(course)), "Nenhuma referência interna a tenants ou /admin");
 assert(!/<(?:video|iframe)[\s>]/i.test(source), "Aulas sem vídeo ou embeds");
 assert(!/youtube|vimeo/i.test(source), "Sem integração de players");
 assert(!/admin\/|tenants|platform.admin/i.test(source), "Sem área de administração interna");
