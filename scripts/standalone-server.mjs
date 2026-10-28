@@ -150,6 +150,38 @@ export function makeServer() {
     if (path === '/favicon.ico') {
       res.writeHead(302, { location: '/brand/elus-vertical.png' }); return res.end();
     }
+    if (path === '/curso' || path === '/curso/') {
+      try {
+        const { GET } = await import('./course-renderer.mjs');
+        const page = GET(new Request('https://elus360.com.br' + (req.url || '/curso')));
+        const content = await page.text();
+        res.writeHead(page.status, {
+          'content-type': 'text/html; charset=utf-8',
+          'cache-control': 'public, max-age=60',
+          'x-content-type-options': 'nosniff',
+        });
+        return res.end(headOnly ? undefined : content);
+      } catch (error) {
+        console.error('Course renderer unavailable:', error instanceof Error ? error.message : 'unknown');
+        return json(res, 503, { error: 'Curso temporariamente indisponível.' });
+      }
+    }
+    if (path.startsWith('/curso/')) {
+      const file = path.slice('/curso/'.length);
+      if (!/^(?:app|simulator)\.js$|^style\.css$|^capturas\/[a-z0-9_-]+_elus\.png$/i.test(file)) {
+        res.writeHead(404); return res.end();
+      }
+      const target = resolve(root, 'public', 'curso', file);
+      try {
+        const st = statSync(target);
+        if (!st.isFile()) { res.writeHead(404); return res.end(); }
+        const ext = file.split('.').at(-1);
+        const type = { png: 'image/png', js: 'text/javascript; charset=utf-8', css: 'text/css; charset=utf-8' }[ext];
+        res.writeHead(200, { 'content-type': type, 'content-length': st.size,
+          'cache-control': 'public, max-age=86400', 'x-content-type-options': 'nosniff' });
+        return headOnly ? res.end() : createReadStream(target).pipe(res);
+      } catch { res.writeHead(404); return res.end(); }
+    }
     if (path.startsWith('/brand/') || path.startsWith('/scrollcraft/')) return staticAsset(path, res, headOnly);
     if (path === '/' || path === '/privacidade' || path === '/privacidade/') {
       const html = path === '/' ? index.replace('</body>', chatHtml() + '</body>') : privacy;
