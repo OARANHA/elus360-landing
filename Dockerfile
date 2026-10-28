@@ -15,7 +15,7 @@ COPY --from=course-builder /build/course-renderer.mjs scripts/course-renderer.mj
 COPY public/brand public/brand
 COPY public/scrollcraft public/scrollcraft
 COPY public/curso public/curso
-RUN node --input-type=module -e "import('./scripts/course-renderer.mjs').then(m=>m.GET(new Request('http://localhost/curso')).then(r=>r.text()).then(t=>{if(!t.includes('ACADEMIA'))process.exit(1)}))"
+RUN node --input-type=module -e "import('./scripts/course-renderer.mjs').then(m=>Promise.resolve(m.GET(new Request('http://localhost/curso'))).then(r=>r.text()).then(t=>{if(!t.includes('ACADEMIA'))process.exit(1)}))"
 ENV NODE_ENV=production PORT=3000
 USER node
 EXPOSE 3000
