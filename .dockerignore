@@ -1,9 +1,17 @@
 *
+!app/
+!app/curso/
+!app/curso/route.ts
 !lib/
 !lib/landing.ts
+!lib/curso-publico.json
 !scripts/
 !scripts/export-standalone.mjs
 !scripts/standalone-server.mjs
 !public/
 !public/brand/
 !public/brand/**
+!public/scrollcraft/
+!public/scrollcraft/**
+!public/curso/
+!public/curso/**
