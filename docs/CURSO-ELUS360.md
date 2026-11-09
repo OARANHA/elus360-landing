@@ -1,5 +1,9 @@
 # Academia ELUS360 — implementação /curso
 
+> Para comparar o currículo publicado com as lições atuais do CRM sem alterar o site,
+> consulte [ACADEMIA-SYNC-ELUS360.md](ACADEMIA-SYNC-ELUS360.md). Esse procedimento usa
+> SHAs Git completos e requer revisão editorial e visual antes de qualquer publicação.
+
 ## Entrega
 - Rota isolada **/curso**, implementada em app/curso/route.ts, preservando a landing comercial.
 - Currículo público: **35 módulos e 173 aulas**, incluindo textos didáticos e capturas.

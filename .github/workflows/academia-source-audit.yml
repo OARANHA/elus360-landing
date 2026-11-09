@@ -1,0 +1,85 @@
+name: ELUS360 Academia — auditoria semanal de conteúdo
+
+on:
+  workflow_dispatch:
+    inputs:
+      crm_sha:
+        description: "SHA completo do código ELUS360 a ensinar; vazio = HEAD atual da main (apenas auditoria)"
+        type: string
+        required: false
+        default: ""
+  schedule:
+    - cron: "23 6 * * 1"
+
+permissions:
+  contents: read
+
+concurrency:
+  group: academia-auditoria-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  audit:
+    name: Comparar currículo público com fonte ELUS360 sem alterar site
+    runs-on: ubuntu-latest
+    timeout-minutes: 18
+    steps:
+      - name: Checkout do site ELUS360 (somente leitura)
+        uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - name: Validar SHA opcional da fonte
+        env:
+          CRM_SHA_INPUT: ${{ github.event_name == 'workflow_dispatch' && inputs.crm_sha || '' }}
+        shell: bash
+        run: |
+          if [[ -n "$CRM_SHA_INPUT" && ! "$CRM_SHA_INPUT" =~ ^[0-9a-f]{40}$ ]]; then
+            echo "Informe SHA completo (40 hex) ou deixe vazio para a main do ELUS360" >&2
+            exit 1
+          fi
+      - name: Checkout do repositório CRM ELUS360 (sem credenciais persistidas)
+        uses: actions/checkout@v4
+        with:
+          repository: OARANHA/elus360
+          ref: ${{ github.event_name == 'workflow_dispatch' && inputs.crm_sha || 'main' }}
+          path: crm-source
+          persist-credentials: false
+      - name: Node 22
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Provar o contrato do comparador
+        run: node --test tests/curso-source-sync.test.mjs
+      - name: Comparar módulos publicados aos módulos correspondentes do CRM
+        shell: bash
+        run: |
+          CRM_SHA="$(git -C crm-source rev-parse HEAD)"
+          SITE_SHA="$(git rev-parse HEAD)"
+          node scripts/auditar-curso-fonte.mjs crm-source "$CRM_SHA" "$SITE_SHA" curso-auditoria.json
+      - name: Resumo de revisão, não publicação
+        run: |
+          node --input-type=module -e '
+            import { readFileSync, appendFileSync } from "node:fs";
+            const report = JSON.parse(readFileSync("curso-auditoria.json", "utf8"));
+            const lines = [
+              "## Auditoria ELUS360 Academia (somente leitura)",
+              "",
+              "- CRM commit: `" + report.crm_commit + "`",
+              "- Site checkout: `" + report.site_commit + "`",
+              "- Currículo fonte declarado no site: `" + report.site_catalog_source_version + "`",
+              "- Módulos públicos considerados: " + report.public_modules,
+              "- Módulos candidatos a revisão: " + report.candidate_modules,
+              "- Módulos sem correspondência no CRM: " + report.missing_source_modules,
+              "",
+              "**Não houve atualização automática, captura, PR de conteúdo, merge nem deploy.**",
+              "Compare os campos do artifact; telas e imagens precisam de revisão em ambiente isolado."
+            ];
+            appendFileSync(process.env.GITHUB_STEP_SUMMARY, lines.join("\n") + "\n");
+          '
+      - name: Anexar relatório auditável sem texto de clientes
+        uses: actions/upload-artifact@v4
+        with:
+          name: auditoria-curso-elus360
+          path: curso-auditoria.json
+          if-no-files-found: error
+          retention-days: 14
