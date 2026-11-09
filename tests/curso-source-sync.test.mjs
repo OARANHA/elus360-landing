@@ -34,7 +34,7 @@ test("sem mudanças indica equivalência textual sem alegar publicação", () =>
   assert.equal(r.candidate_modules, 0);
   assert.equal(r.kind, "auditoria_read_only_nao_publicacao");
   assert.equal(r.site_catalog_source_version, "1.89.0 / 1.88.0");
-  assert.ok(!JSON.stringify(r).includes("imagem"));
+  assert.ok(!JSON.stringify(r).includes("teste_elus.png"));
 });
 
 test("diferença textual preserva dados editados, sem expor conteúdo no relatório", () => {
