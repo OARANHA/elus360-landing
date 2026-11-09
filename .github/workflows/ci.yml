@@ -38,6 +38,9 @@ jobs:
       - name: Instalar dependências com lockfile
         run: pnpm install --frozen-lockfile
 
+      - name: Validar o comparador somente leitura da Academia
+        run: node --test tests/curso-source-sync.test.mjs
+
       - name: Validar TypeScript
         run: pnpm exec tsc --noEmit
 
