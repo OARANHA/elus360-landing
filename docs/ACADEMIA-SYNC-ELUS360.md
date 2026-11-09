@@ -16,6 +16,16 @@ Em 09/11/2026, o currículo deste repositório declarava `sourceVersion: "1.89.0
 
 A revisão não deve igualar versões por edição textual. O procedimento seguro começa por comparar **SHAs completos dos commits** do site e do CRM, depois identificar quais funcionalidades foram publicadas e quais aulas têm diferenças textuais ou visuais.
 
+## Diagnóstico inicial de revisão — 09/11/2026
+
+Comparação direta em **35/35 módulos públicos** entre site `OARANHA/elus360-landing` @ `c0f063b3d9b93df3f93e8d66dae6f8f1a35e33df` e `OARANHA/elus360` @ `d7ffb33d6e0d13b0d74dd4bbb4598a1df3065c67`:
+
+- Os 35 módulos apresentaram **ao menos uma diferença textual** (título, texto ou dica de passo). Isto não equivale a 35 bugs: há adaptação editorial deliberada no site.
+- **Agentes, Casos e LGPD** apresentaram diferença adicional no número de passos de aula, que exige comparação de permissões/escopo.
+- Os IDs de módulos e aulas públicas comparados possuem correspondentes na fonte consultada. O inventário não aprova automaticamente aulas ou módulos extras da fonte.
+- A comparação foi feita **entre árvores Git identificadas**, não por renderização no navegador, nem com recibo de release. Portanto, **não confirma** a versão servida do CRM em produção, fidelidade de screenshots, navegação ou necessidade de recaptura de cada tela.
+- Até criar um recibo de publicação ELUS360 verificável, a auditoria semanal pode voltar a apontar diferenças editoriais existentes. Seu resultado é uma fila de **revisão**, não uma lista de correções automáticas.
+
 ## Auditoria somente leitura
 
 Em uma bancada descartável (fora do servidor de produção), com clones próprios e alterações locais preservadas:
